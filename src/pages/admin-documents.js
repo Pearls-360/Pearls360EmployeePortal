@@ -34,12 +34,24 @@ function sizeLabel(bytes) {
 
 const rows = /** @type {HTMLElement} */ ($('[data-rows]'));
 const empty = /** @type {HTMLElement} */ ($('[data-empty]'));
+const countEl = /** @type {HTMLElement} */ ($('[data-doc-count]'));
+const dialog = /** @type {HTMLDialogElement} */ ($('#upload-dialog'));
 const form = /** @type {HTMLFormElement} */ ($('#upload-form'));
 const alertEl = /** @type {HTMLElement} */ ($('[data-page-alert]'));
+const formAlert = /** @type {HTMLElement} */ ($('[data-form-alert]'));
 const save = /** @type {HTMLButtonElement} */ ($('[data-save]'));
+const noun = kind === 'resource' ? 'resource' : 'document';
+
+function openUpload() {
+  hideAlert(formAlert);
+  clearFieldErrors(form);
+  form.reset();
+  if (!dialog.open) dialog.showModal();
+}
 
 async function load() {
   const { documents } = await api(`/admin/documents?kind=${kind}`);
+  countEl.textContent = documents.length === 1 ? `1 ${noun}` : `${documents.length} ${noun}s`;
   rows.replaceChildren(...documents.map((doc) => {
     const item = document.createElement('li');
     const text = document.createElement('div');
@@ -74,14 +86,15 @@ clearErrorsOnInput(form);
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   hideAlert(alertEl);
+  hideAlert(formAlert);
   clearFieldErrors(form);
   const file = /** @type {HTMLInputElement} */ (form.elements.namedItem('file')).files?.[0];
   if (!file) {
-    showAlert(alertEl, 'Choose a file.');
+    showAlert(formAlert, 'Choose a file.');
     return;
   }
   if (file.size > 2_000_000) {
-    showAlert(alertEl, 'Keep the file under 2 MB.');
+    showAlert(formAlert, 'Keep the file under 2 MB.');
     return;
   }
   setBusy(save, true, 'Saving…');
@@ -97,17 +110,25 @@ form.addEventListener('submit', async (event) => {
         file: await readFile(file)
       }
     });
-    form.reset();
     setBusy(save, false);
+    dialog.close();
     showAlert(alertEl, 'Saved in the database.', 'success');
     await load();
   } catch (error) {
     setBusy(save, false);
     const err = /** @type {import('../lib/api.js').ApiError} */ (error);
     applyFieldErrors(form, err.fields);
-    showAlert(alertEl, err.message);
+    showAlert(formAlert, err.message);
   }
 });
+
+document.querySelectorAll('[data-upload-close]').forEach((button) => {
+  button.addEventListener('click', () => dialog.close());
+});
+dialog.addEventListener('click', (event) => {
+  if (event.target === dialog) dialog.close();
+});
+$('[data-add-document]').addEventListener('click', openUpload);
 
 async function init() {
   const user = await requirePage({ role: 'admin' });
@@ -118,6 +139,10 @@ async function init() {
     await load();
   } catch (error) {
     showAlert(alertEl, /** @type {Error} */ (error).message);
+  }
+  if (new URLSearchParams(window.location.search).get('add') === '1') {
+    openUpload();
+    window.history.replaceState({}, '', kind === 'resource' ? '/admin/resources' : '/admin/library');
   }
 }
 

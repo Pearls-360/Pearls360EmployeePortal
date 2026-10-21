@@ -20,48 +20,72 @@
   <div class="app-body">
     <header class="topbar" data-topbar></header>
     <main class="app-content" id="main">
-      <section class="dash-intro">
-        <h1>Internal Library</h1>
-        <p>Company documents stored in the database.</p>
-      </section>
+      <div class="page-toolbar">
+        <div>
+          <p class="topbar__eyebrow" style="margin:0">Management</p>
+          <p data-doc-count></p>
+        </div>
+        <div class="page-toolbar__actions">
+          <button class="btn" type="button" data-add-document>Upload document</button>
+        </div>
+      </div>
       <div class="form__alert" data-page-alert role="alert" hidden><span data-alert-text></span></div>
-      <section class="panel">
-        <h2 class="panel__title">Upload</h2>
-        <form class="form" id="upload-form" novalidate>
-          <div class="form-grid">
-            <div class="field">
-              <label for="title">Title</label>
-              <div class="field__control"><input id="title" name="title" maxlength="160" required></div>
-            </div>
-            <div class="field">
-              <label for="category">Category</label>
-              <div class="field__control"><input id="category" name="category" maxlength="80" placeholder="Optional"></div>
-            </div>
-            <div class="field">
-              <label for="visibility">Who can open it</label>
-              <div class="field__control">
-                <select id="visibility" name="visibility">
-                  <option value="company">All employees</option>
-                  <option value="leadership">Leadership only</option>
-                </select>
-              </div>
-            </div>
-            <div class="field">
-              <label for="file">File</label>
-              <div class="field__control"><input id="file" name="file" type="file" required></div>
-              <p class="field__hint">Any file, up to 2 MB. Employees can open it only while signed in.</p>
-            </div>
+      <section class="panel" aria-labelledby="documents-title">
+        <div class="panel__head">
+          <div>
+            <h2 class="panel__title" id="documents-title">Internal Library</h2>
+            <p>Company documents stored in the database.</p>
           </div>
-          <button class="btn" type="submit" data-save>Save document</button>
-        </form>
-      </section>
-      <section class="panel">
-        <h2 class="panel__title">Documents</h2>
+        </div>
         <ul class="record-list" data-rows></ul>
         <p class="empty" data-empty hidden>No documents yet.</p>
       </section>
     </main>
   </div>
 </div>
+
+<dialog class="drawer" id="upload-dialog" aria-labelledby="upload-dialog-title">
+  <div class="drawer__inner">
+    <div class="drawer__head">
+      <div>
+        <span class="eyebrow eyebrow--plain">Library</span>
+        <h2 class="drawer__title" id="upload-dialog-title">Upload document</h2>
+      </div>
+      <button class="drawer__close" type="button" data-upload-close aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="drawer__body">
+      <form class="form" id="upload-form" novalidate>
+        <div class="form__alert" data-form-alert role="alert" hidden><span data-alert-text></span></div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="title">Title</label>
+            <div class="field__control"><input id="title" name="title" maxlength="160" required></div>
+          </div>
+          <div class="field">
+            <label for="category">Category</label>
+            <div class="field__control"><input id="category" name="category" maxlength="80" placeholder="Optional"></div>
+          </div>
+          <div class="field">
+            <label for="visibility">Who can open it</label>
+            <div class="field__control">
+              <select id="visibility" name="visibility">
+                <option value="company">All employees</option>
+                <option value="leadership">Leadership only</option>
+              </select>
+            </div>
+          </div>
+          <div class="field full">
+            <label for="file">File</label>
+            <div class="field__control"><input id="file" name="file" type="file" required></div>
+            <p class="field__hint">Any file, up to 2 MB. Employees can open it only while signed in.</p>
+          </div>
+        </div>
+        <button class="btn" type="submit" data-save>Save document</button>
+      </form>
+    </div>
+  </div>
+</dialog>
 </body>
 </html>

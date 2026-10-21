@@ -12,11 +12,28 @@ import { requirePage, revealPage } from '../lib/session.js';
 const $ = (sel) => /** @type {T} */ (document.querySelector(sel));
 
 const form = /** @type {HTMLFormElement} */ ($('#invoice-form'));
+const dialog = /** @type {HTMLDialogElement} */ ($('#invoice-dialog'));
 const rows = /** @type {HTMLTableSectionElement} */ ($('[data-rows]'));
 const empty = /** @type {HTMLElement} */ ($('[data-empty]'));
 const alertEl = /** @type {HTMLElement} */ ($('[data-page-alert]'));
+const formAlert = /** @type {HTMLElement} */ ($('[data-form-alert]'));
+const countEl = /** @type {HTMLElement} */ ($('[data-invoice-count]'));
 const save = /** @type {HTMLButtonElement} */ ($('[data-save]'));
 const employeeSelect = /** @type {HTMLSelectElement} */ ($('#employeeId'));
+
+function today() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function openCreate() {
+  hideAlert(formAlert);
+  clearFieldErrors(form);
+  form.reset();
+  /** @type {HTMLInputElement} */ (form.elements.namedItem('currency')).value = 'USD';
+  /** @type {HTMLSelectElement} */ (form.elements.namedItem('status')).value = 'open';
+  /** @type {HTMLInputElement} */ (form.elements.namedItem('issuedOn')).value = today();
+  if (!dialog.open) dialog.showModal();
+}
 
 /** @param {string} status */
 function statusSelect(id, status) {
@@ -51,6 +68,7 @@ async function load() {
   }
   if (current) employeeSelect.value = current;
 
+  countEl.textContent = invoices.length === 1 ? '1 invoice' : `${invoices.length} invoices`;
   rows.replaceChildren(...invoices.map((invoice) => {
     const tr = document.createElement('tr');
     const cells = [
@@ -77,33 +95,44 @@ clearErrorsOnInput(form);
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   hideAlert(alertEl);
+  hideAlert(formAlert);
   clearFieldErrors(form);
   setBusy(save, true, 'Saving…');
   try {
     await api('/admin/invoices', { method: 'POST', body: formValues(form) });
-    form.reset();
-    /** @type {HTMLInputElement} */ (form.elements.namedItem('issuedOn')).value = new Date().toISOString().slice(0, 10);
     setBusy(save, false);
+    dialog.close();
     showAlert(alertEl, 'Invoice saved.', 'success');
     await load();
   } catch (error) {
     setBusy(save, false);
     const err = /** @type {import('../lib/api.js').ApiError} */ (error);
     applyFieldErrors(form, err.fields);
-    showAlert(alertEl, err.message);
+    showAlert(formAlert, err.message);
   }
 });
+
+document.querySelectorAll('[data-invoice-close]').forEach((button) => {
+  button.addEventListener('click', () => dialog.close());
+});
+dialog.addEventListener('click', (event) => {
+  if (event.target === dialog) dialog.close();
+});
+$('[data-add-invoice]').addEventListener('click', openCreate);
 
 async function init() {
   const user = await requirePage({ role: 'admin' });
   if (!user) return;
   mountShell({ role: 'admin', active: 'invoices', title: 'Employee Invoices', user });
-  /** @type {HTMLInputElement} */ (form.elements.namedItem('issuedOn')).value = new Date().toISOString().slice(0, 10);
   revealPage();
   try {
     await load();
   } catch (error) {
     showAlert(alertEl, /** @type {Error} */ (error).message);
+  }
+  if (new URLSearchParams(window.location.search).get('add') === '1') {
+    openCreate();
+    window.history.replaceState({}, '', '/admin/invoices');
   }
 }
 

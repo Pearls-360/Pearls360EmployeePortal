@@ -71,7 +71,43 @@
    Reset
    -------------------------------------------------------------------------- */
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; background: var(--light); }
+
+/* Shown until the page script marks the body ready. Sits above the fade so it is visible immediately. */
+html.js::before,
+html.js::after {
+  pointer-events: none;
+  transition: opacity .35s ease, visibility .35s ease;
+}
+html.js::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: var(--light);
+}
+html.js::after {
+  content: "";
+  position: fixed;
+  z-index: 10001;
+  top: 50%;
+  left: 50%;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 1.5px solid var(--black);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+html.js:has(body.is-ready)::before,
+html.js:has(body.is-ready)::after {
+  opacity: 0;
+  visibility: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.js::after { animation: none; border-right-color: var(--black); opacity: .45; }
+}
 
 body {
   margin: 0;

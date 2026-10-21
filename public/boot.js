@@ -2,5 +2,5 @@
 document.documentElement.classList.add('js');
 document.documentElement.setAttribute('data-theme', 'light');
 setTimeout(function () {
-  if (document.body) document.body.classList.add('is-ready');
-}, 2500);
+  if (document.body && !document.body.classList.contains('is-ready')) document.body.classList.add('is-ready');
+}, 8000);

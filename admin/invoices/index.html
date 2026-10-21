@@ -20,59 +20,24 @@
   <div class="app-body">
     <header class="topbar" data-topbar></header>
     <main class="app-content" id="main">
-      <section class="dash-intro">
-        <h1>Employee Invoices</h1>
-        <p>Each amount stays in its own currency.</p>
-      </section>
+      <div class="page-toolbar">
+        <div>
+          <p class="topbar__eyebrow" style="margin:0">Management</p>
+          <p data-invoice-count></p>
+        </div>
+        <div class="page-toolbar__actions">
+          <button class="btn" type="button" data-add-invoice>New Invoice</button>
+        </div>
+      </div>
+
       <div class="form__alert" data-page-alert role="alert" hidden><span data-alert-text></span></div>
-      <section class="panel">
-        <h2 class="panel__title">New invoice</h2>
-        <form class="form" id="invoice-form" novalidate>
-          <div class="form-grid">
-            <div class="field">
-              <label for="employeeId">Employee</label>
-              <div class="field__control"><select id="employeeId" name="employeeId" required></select></div>
-            </div>
-            <div class="field">
-              <label for="invoiceNumber">Invoice number</label>
-              <div class="field__control"><input id="invoiceNumber" name="invoiceNumber" maxlength="32" required></div>
-            </div>
-            <div class="field full">
-              <label for="description">Description</label>
-              <div class="field__control"><input id="description" name="description" maxlength="240" required></div>
-            </div>
-            <div class="field">
-              <label for="amount">Amount</label>
-              <div class="field__control"><input id="amount" name="amount" inputmode="decimal" required></div>
-            </div>
-            <div class="field">
-              <label for="currency">Currency</label>
-              <div class="field__control"><input id="currency" name="currency" maxlength="3" value="USD" required></div>
-            </div>
-            <div class="field">
-              <label for="issuedOn">Issued</label>
-              <div class="field__control"><input id="issuedOn" name="issuedOn" type="date" required></div>
-            </div>
-            <div class="field">
-              <label for="dueOn">Due</label>
-              <div class="field__control"><input id="dueOn" name="dueOn" type="date"></div>
-            </div>
-            <div class="field">
-              <label for="status">Status</label>
-              <div class="field__control">
-                <select id="status" name="status">
-                  <option value="draft">Draft</option>
-                  <option value="open" selected>Open</option>
-                  <option value="paid">Paid</option>
-                  <option value="void">Void</option>
-                </select>
-              </div>
-            </div>
+      <section class="panel" aria-labelledby="invoices-title">
+        <div class="panel__head">
+          <div>
+            <h2 class="panel__title" id="invoices-title">Employee Invoices</h2>
+            <p>Each amount stays in its own currency.</p>
           </div>
-          <button class="btn" type="submit" data-save>Save invoice</button>
-        </form>
-      </section>
-      <section class="panel">
+        </div>
         <div class="table-wrap">
           <table class="table">
             <thead>
@@ -93,5 +58,66 @@
     </main>
   </div>
 </div>
+
+<dialog class="drawer" id="invoice-dialog" aria-labelledby="invoice-dialog-title">
+  <div class="drawer__inner">
+    <div class="drawer__head">
+      <div>
+        <span class="eyebrow eyebrow--plain">Invoice</span>
+        <h2 class="drawer__title" id="invoice-dialog-title">New Invoice</h2>
+      </div>
+      <button class="drawer__close" type="button" data-invoice-close aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="drawer__body">
+      <form class="form" id="invoice-form" novalidate>
+        <div class="form__alert" data-form-alert role="alert" hidden><span data-alert-text></span></div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="employeeId">Employee</label>
+            <div class="field__control"><select id="employeeId" name="employeeId" required></select></div>
+          </div>
+          <div class="field">
+            <label for="invoiceNumber">Invoice number</label>
+            <div class="field__control"><input id="invoiceNumber" name="invoiceNumber" maxlength="32" required></div>
+          </div>
+          <div class="field full">
+            <label for="description">Description</label>
+            <div class="field__control"><input id="description" name="description" maxlength="240" required></div>
+          </div>
+          <div class="field">
+            <label for="amount">Amount</label>
+            <div class="field__control"><input id="amount" name="amount" inputmode="decimal" required></div>
+          </div>
+          <div class="field">
+            <label for="currency">Currency</label>
+            <div class="field__control"><input id="currency" name="currency" maxlength="3" value="USD" required></div>
+          </div>
+          <div class="field">
+            <label for="issuedOn">Issued</label>
+            <div class="field__control"><input id="issuedOn" name="issuedOn" type="date" required></div>
+          </div>
+          <div class="field">
+            <label for="dueOn">Due</label>
+            <div class="field__control"><input id="dueOn" name="dueOn" type="date"></div>
+          </div>
+          <div class="field">
+            <label for="status">Status</label>
+            <div class="field__control">
+              <select id="status" name="status">
+                <option value="draft">Draft</option>
+                <option value="open" selected>Open</option>
+                <option value="paid">Paid</option>
+                <option value="void">Void</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <button class="btn" type="submit" data-save>Save invoice</button>
+      </form>
+    </div>
+  </div>
+</dialog>
 </body>
 </html>
