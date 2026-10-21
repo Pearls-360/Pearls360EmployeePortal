@@ -10,6 +10,20 @@ function env(name) {
 
 const isProduction = process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL_ENV);
 
+function databaseFields() {
+  const host = env('DATABASE_HOST');
+  const user = env('DATABASE_USER');
+  const password = env('DATABASE_PASSWORD');
+  if (!host || !user || !password) return null;
+  return {
+    host,
+    port: env('DATABASE_PORT') || '6543',
+    user,
+    password,
+    database: env('DATABASE_NAME') || 'postgres'
+  };
+}
+
 function appOrigin() {
   const configured = env('APP_ORIGIN');
   if (configured) return configured.replace(/\/+$/, '');
@@ -24,6 +38,11 @@ export const config = {
   extraOrigins: (env('ALLOWED_ORIGINS') || '').split(',').map((o) => o.trim().replace(/\/+$/, '')).filter(Boolean),
 
   databaseUrl: env('DATABASE_URL'),
+  /**
+   * Preferred on Vercel. The password is the raw database password, so
+   * characters like ] } % do not have to be percent-encoded.
+   */
+  database: databaseFields(),
   migrationDatabaseUrl: env('MIGRATION_DATABASE_URL') || env('DATABASE_URL'),
   /** PEM contents of the Supabase root CA. Enables full TLS verification. */
   databaseCaCert: env('DATABASE_CA_CERT')?.replace(/\\n/g, '\n'),

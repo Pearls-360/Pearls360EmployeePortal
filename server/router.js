@@ -71,6 +71,19 @@ const COMPILED = ROUTES.map(([method, pattern, handler]) => {
   return { method, regex, keys, handler };
 });
 
+/** @param {string | undefined} code */
+function databaseErrorMessage(code) {
+  if (code === 'SELF_SIGNED_CERT_IN_CHAIN' || code === 'UNABLE_TO_VERIFY_LEAF_SIGNATURE' || code === 'DEPTH_ZERO_SELF_SIGNED_CERT') {
+    return 'The database certificate was rejected. Remove DATABASE_CA_CERT and redeploy.';
+  }
+  if (code === '28P01' || code === '28000') return 'The database rejected the username or password.';
+  if (code === 'ENOTFOUND' || code === 'ECONNREFUSED' || code === 'ETIMEDOUT' || code === 'ENETUNREACH' || code === 'EAI_AGAIN') {
+    return 'The server could not reach the database host. Use the transaction pooler on port 6543.';
+  }
+  if (code === '42P01' || code === '3F000') return 'The database is missing the portal tables.';
+  return 'Something went wrong. Please try again.';
+}
+
 /** @param {URL} url */
 function apiPath(url) {
   // Vercel rewrites /api/:path* to /api?route=:path*; locally the full path is used.
@@ -125,6 +138,6 @@ export async function handleApi(req, res) {
       return;
     }
     console.error('[api] unhandled error', err);
-    sendJson(res, 500, { error: { message: 'Something went wrong. Please try again.', code: 'INTERNAL' } });
+    sendJson(res, 500, { error: { message: databaseErrorMessage(code), code: 'INTERNAL' } });
   }
 }

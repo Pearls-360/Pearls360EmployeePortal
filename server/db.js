@@ -7,31 +7,29 @@ import { config } from './config.js';
  * @typedef {Queryable & { tx: <T>(fn: (client: Queryable) => Promise<T>) => Promise<T>, end?: () => Promise<void> }} Database
  */
 
-/** @param {string} url */
-function sslOptions(url) {
+/**
+ * Supabase's pooler certificate is not in Node's trust store. Verifying it
+ * (sslmode=require, or any DATABASE_CA_CERT value) fails the connection.
+ * @param {string} host
+ */
+function sslOptions(host) {
   if (config.databaseSsl === 'disable') return false;
-  if (config.databaseCaCert) return { ca: config.databaseCaCert, rejectUnauthorized: true };
-  // Encrypted, but the server certificate is not verified. Set DATABASE_CA_CERT to verify.
-  if (/supabase\.(co|com)/.test(url)) return { rejectUnauthorized: false };
-  return { rejectUnauthorized: true };
-}
-
-/** sslmode in the URL would override the explicit ssl options below. */
-function stripSslMode(url) {
-  const parsed = new URL(url);
-  parsed.searchParams.delete('sslmode');
-  return parsed.toString();
+  return { rejectUnauthorized: false, servername: host };
 }
 
 /**
- * @param {string} url
+ * @param {{ host: string, port: string | number, user: string, password: string, database: string }} fields
  * @param {{ max?: number }} [options]
  * @returns {Database}
  */
-export function createPgDatabase(url, options = {}) {
+function poolFromFields(fields, options = {}) {
   const pool = new pg.Pool({
-    connectionString: stripSslMode(url),
-    ssl: sslOptions(url),
+    host: fields.host,
+    port: Number(fields.port),
+    user: fields.user,
+    password: fields.password,
+    database: fields.database,
+    ssl: sslOptions(fields.host),
     max: options.max ?? config.databasePoolMax,
     idleTimeoutMillis: 10_000,
     connectionTimeoutMillis: 10_000
@@ -60,12 +58,32 @@ export function createPgDatabase(url, options = {}) {
   };
 }
 
+/**
+ * @param {string} url
+ * @param {{ max?: number }} [options]
+ * @returns {Database}
+ */
+export function createPgDatabase(url, options = {}) {
+  const parsed = new URL(url);
+  return poolFromFields({
+    host: parsed.hostname,
+    port: parsed.port || '5432',
+    user: decodeURIComponent(parsed.username),
+    password: decodeURIComponent(parsed.password),
+    database: decodeURIComponent(parsed.pathname.replace(/^\//, '')) || 'postgres'
+  }, options);
+}
+
 /** @type {Database | null} */
 let current = null;
 
 /** @returns {Database} */
 export function getDb() {
   if (current) return current;
+  if (config.database) {
+    current = poolFromFields(config.database);
+    return current;
+  }
   if (!config.databaseUrl) {
     const err = new Error('DATABASE_URL is not configured.');
     // @ts-ignore
