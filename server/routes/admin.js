@@ -275,6 +275,23 @@ export async function setEmployeeStatus({ db, req, res, params }) {
   sendJson(res, 200, { employee: await loadEmployee(db, id) });
 }
 
+/** Removes an employee account. Invoices stay, so an employee with invoices cannot be removed. @type {import('../router.js').Handler} */
+export async function deleteEmployee({ db, req, res, params }) {
+  const session = await requireSession(db, req, { roles: ['admin'] });
+  const id = assertUuid(params.id);
+  await db.tx(async (tx) => {
+    const { rows } = await tx.query("select id from app.users where id = $1 and role = 'employee' for update", [id]);
+    if (!rows[0]) throw new HttpError(404, 'Employee not found.', { code: 'NOT_FOUND' });
+    const { rows: invoices } = await tx.query('select count(*)::int as n from app.invoices where employee_id = $1', [id]);
+    if (invoices[0].n > 0) {
+      throw new HttpError(409, 'This employee has invoices, so the account cannot be deleted.', { code: 'CONFLICT' });
+    }
+    await audit(tx, { actorId: session.user.id, action: 'employee.deleted', targetType: 'user', targetId: id, ip: clientIp(req) });
+    await tx.query('delete from app.users where id = $1', [id]);
+  });
+  sendJson(res, 200, { ok: true });
+}
+
 /** Issues an activation link (never set a password) or a reset link. @type {import('../router.js').Handler} */
 export async function issueEmployeeAccessLink({ db, req, res, params }) {
   const session = await requireSession(db, req, { roles: ['admin'] });

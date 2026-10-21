@@ -41,6 +41,7 @@ const ROUTES = [
   ['GET', '/admin/employees/:id', admin.getEmployee],
   ['PATCH', '/admin/employees/:id', admin.updateEmployee],
   ['POST', '/admin/employees/:id/status', admin.setEmployeeStatus],
+  ['DELETE', '/admin/employees/:id', admin.deleteEmployee],
   ['POST', '/admin/employees/:id/access-link', admin.issueEmployeeAccessLink],
   ['GET', '/admin/admins', admin.listAdmins],
   ['POST', '/admin/admins', admin.createAdminAccount],

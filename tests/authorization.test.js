@@ -27,6 +27,7 @@ const ADMIN_ENDPOINTS = (id) => [
   ['GET', `/admin/employees/${id}`],
   ['PATCH', `/admin/employees/${id}`, { department: 'Hacked' }],
   ['POST', `/admin/employees/${id}/status`, { status: 'inactive' }],
+  ['DELETE', `/admin/employees/${id}`],
   ['POST', `/admin/employees/${id}/access-link`, {}],
   ['GET', '/admin/admins'],
   ['POST', '/admin/admins', {}],

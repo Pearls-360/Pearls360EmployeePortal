@@ -31,6 +31,7 @@ const AUDIT_LABELS = {
   'employee.updated': 'Employee details updated',
   'employee.activated': 'Account activated',
   'employee.deactivated': 'Account deactivated',
+  'employee.deleted': 'Account deleted',
   'employee.activation_link_issued': 'Activation link issued',
   'employee.password_reset_initiated': 'Password reset initiated',
   'profile.updated': 'Updated own profile'

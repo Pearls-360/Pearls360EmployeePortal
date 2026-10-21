@@ -59,19 +59,13 @@ function renderEmployees(employees) {
     ...employees.map((e) => {
       const tr = el('tr');
       const nameCell = el('td');
-      const name = el('button', 'table__link', `${e.firstName} ${e.lastName}`);
-      name.setAttribute('type', 'button');
-      name.addEventListener('click', () => openEmployee(e.id));
-      nameCell.append(name, el('span', 'table__sub', e.email));
-      const status = el('td');
-      status.append(pill(e.accountStatus));
-      tr.append(
-        nameCell,
-        el('td', 'table__code', e.employeeCode),
-        el('td', 'hide-sm', e.department),
-        el('td', 'hide-sm', e.designation),
-        status
-      );
+      nameCell.append(el('span', 'table__name', `${e.firstName} ${e.lastName}`), el('span', 'table__sub', e.email));
+      const viewCell = el('td', 'table__actions');
+      const view = el('button', 'btn btn--ghost btn--sm', 'View');
+      view.type = 'button';
+      view.addEventListener('click', () => openEmployee(e.id));
+      viewCell.append(view);
+      tr.append(nameCell, el('td', 'table__code', e.employeeCode), viewCell);
       return tr;
     })
   );
@@ -122,6 +116,7 @@ const historySection = /** @type {HTMLElement} */ ($('[data-history-section]'));
 const historyList = /** @type {HTMLUListElement} */ ($('[data-history]'));
 const accessLinkButton = /** @type {HTMLButtonElement} */ ($('[data-access-link]'));
 const toggleStatusButton = /** @type {HTMLButtonElement} */ ($('[data-toggle-status]'));
+const deleteButton = /** @type {HTMLButtonElement} */ ($('[data-delete-employee]'));
 
 /** @type {Employee | null} */
 let current = null;
@@ -302,6 +297,22 @@ toggleStatusButton.addEventListener('click', async () => {
     openEmployeeHistory();
   } catch (error) {
     setBusy(toggleStatusButton, false);
+    showAlert(dialogAlert, /** @type {Error} */ (error).message);
+  }
+});
+
+deleteButton.addEventListener('click', async () => {
+  if (!current) return;
+  const name = `${current.firstName} ${current.lastName}`;
+  if (!window.confirm(`Delete ${name}'s account? This cannot be undone.`)) return;
+  setBusy(deleteButton, true, 'Deleting…');
+  try {
+    await api(`/admin/employees/${current.id}`, { method: 'DELETE' });
+    dialog.close();
+    showAlert(directoryAlert, 'Account deleted.', 'success');
+    refreshAll();
+  } catch (error) {
+    setBusy(deleteButton, false);
     showAlert(dialogAlert, /** @type {Error} */ (error).message);
   }
 });
