@@ -97,7 +97,7 @@ export function mountShell({ role, active, title, user }) {
   sidebar.innerHTML = `
     <div class="sidebar__brand">
       <a class="brand brand--shell" href="${nav.home}">
-        <img class="brand__mark" src="/src/assets/img/logo.png" alt="" width="40" height="40">
+        <img class="brand__mark" src="/logo.png" alt="" width="40" height="40">
         <span class="brand__text">PEARLS 360</span>
       </a>
       <button class="sidebar__collapse" type="button" data-collapse title="${collapsed ? 'Expand sidebar' : 'Collapse sidebar'}" aria-label="${collapsed ? 'Expand sidebar' : 'Collapse sidebar'}" aria-expanded="${collapsed ? 'false' : 'true'}">${icons.panel()}</button>

@@ -6,7 +6,7 @@
   <title>My Profile | Pearls360 Employee Portal</title>
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#f1f1ef">
-  <link rel="icon" type="image/png" href="/src/assets/img/logo.png">
+  <link rel="icon" type="image/png" href="/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
@@ -23,12 +23,14 @@
       <div class="form__alert" data-page-alert role="alert" hidden><span data-alert-text></span></div>
 
       <section class="profile-hero">
-        <div class="profile-avatar" data-avatar-wrap>
-          <span class="profile-avatar__initial" data-avatar-initial>P</span>
-          <img data-avatar-img hidden alt="">
-          <label class="profile-avatar__actions">
+        <div class="profile-photo">
+          <div class="profile-avatar" data-avatar-wrap>
+            <span class="profile-avatar__initial" data-avatar-initial>P</span>
+            <img data-avatar-img hidden alt="">
+          </div>
+          <label class="profile-photo__change">
             Change photo
-            <input class="sr-only" type="file" accept="image/jpeg,image/png,image/webp" data-avatar-input>
+            <input class="sr-only" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" data-avatar-input>
           </label>
         </div>
         <div class="profile-hero__text">
