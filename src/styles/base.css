@@ -71,6 +71,7 @@
    Reset
    -------------------------------------------------------------------------- */
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; background: var(--light); }
 
 /* Shown until the page script marks the body ready. Sits above the fade so it is visible immediately. */

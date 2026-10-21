@@ -58,8 +58,8 @@ export const config = {
 
   tokens: {
     activationTtlMs: 72 * 60 * 60 * 1000,
-    adminResetTtlMs: 24 * 60 * 60 * 1000,
-    selfResetTtlMs: 60 * 60 * 1000
+    adminResetTtlMs: 30 * 60 * 1000,
+    selfResetTtlMs: 30 * 60 * 1000
   },
 
   email: {

@@ -52,8 +52,7 @@ describe('unauthenticated access', () => {
       ['GET', '/employee/documents'],
       ['GET', '/employee/invoices'],
       ['GET', '/documents/00000000-0000-4000-8000-000000000001/file'],
-      ['GET', '/auth/session'],
-      ['POST', '/auth/change-password', {}]
+      ['GET', '/auth/session']
     ];
     for (const [method, path, body] of endpoints) {
       const r = await call({ method, path, body });

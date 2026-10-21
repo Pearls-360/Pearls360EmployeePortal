@@ -72,19 +72,16 @@ export async function audit(db, entry) {
 }
 
 /**
- * Loads and validates the session; enforces role and the forced password change.
+ * Loads and validates the session and enforces role.
  * Every protected handler goes through this — authorization never relies on the UI.
  * @param {import('./db.js').Queryable} db
  * @param {import('node:http').IncomingMessage} req
- * @param {{ roles?: Array<'admin' | 'employee'>, allowPasswordChangeRequired?: boolean }} [opts]
+ * @param {{ roles?: Array<'admin' | 'employee'> }} [opts]
  * @returns {Promise<import('./auth/sessions.js').SessionContext>}
  */
-export async function requireSession(db, req, { roles, allowPasswordChangeRequired = false } = {}) {
+export async function requireSession(db, req, { roles } = {}) {
   const session = await validateSessionToken(db, readSessionCookie(req));
   if (!session) throw new HttpError(401, 'Your session has ended. Please sign in again.', { code: 'UNAUTHENTICATED' });
-  if (session.user.mustChangePassword && !allowPasswordChangeRequired) {
-    throw new HttpError(403, 'You must change your password before continuing.', { code: 'PASSWORD_CHANGE_REQUIRED' });
-  }
   if (roles && !roles.includes(session.user.role)) {
     throw new HttpError(403, 'You do not have permission to do that.', { code: 'FORBIDDEN' });
   }

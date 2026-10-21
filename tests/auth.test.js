@@ -1,6 +1,9 @@
 import { after, before, beforeEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { hashToken } from '../server/auth/tokens.js';
+import { issueAccessToken } from '../server/auth/access-tokens.js';
+import { config } from '../server/config.js';
+import { hashPassword } from '../server/auth/passwords.js';
 import { ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_TEMP_PASSWORD, Agent, COOKIE, call, createActiveEmployee, createTestDb, nextIp } from './helpers.js';
 import { createAdmin } from '../server/bootstrap.js';
 
@@ -12,52 +15,37 @@ let admin;
 before(async () => {
   db = await createTestDb();
   await createAdmin(db, { email: ADMIN_EMAIL, password: ADMIN_TEMP_PASSWORD });
+  await db.query(
+    `update app.users set password_hash = $2, must_change_password = false, password_changed_at = now() where email = $1`,
+    [ADMIN_EMAIL, await hashPassword(ADMIN_PASSWORD)]
+  );
+  admin = new Agent();
+  assert.equal((await admin.login(ADMIN_EMAIL, ADMIN_PASSWORD)).status, 200);
 });
 after(() => db.end());
 // Each rate-limit test is self-contained; start every test with fresh counters.
 beforeEach(() => db.query('delete from app.rate_limits'));
 
-describe('first admin sign-in', () => {
-  test('requires a password change before anything else', async () => {
-    admin = new Agent();
-    const login = await admin.login(ADMIN_EMAIL, ADMIN_TEMP_PASSWORD);
+describe('password reset is only by email', () => {
+  test('there is no signed-in change-password action', async () => {
+    const r = await admin.post('/auth/change-password', { currentPassword: ADMIN_PASSWORD, newPassword: 'Another-Pass-2026!' });
+    assert.equal(r.status, 404);
+  });
+
+  test('signing in opens the workspace', async () => {
+    const login = await new Agent().login(ADMIN_EMAIL, ADMIN_PASSWORD);
     assert.equal(login.status, 200);
-    assert.equal(login.body.redirectTo, '/auth/change-password');
-    assert.equal(login.body.user.mustChangePassword, true);
-
-    const blocked = await admin.get('/admin/overview');
-    assert.equal(blocked.status, 403);
-    assert.equal(blocked.body.error.code, 'PASSWORD_CHANGE_REQUIRED');
-
-    const session = await admin.get('/auth/session');
-    assert.equal(session.status, 200);
-    assert.equal(session.body.home, '/auth/change-password');
+    assert.equal(login.body.redirectTo, '/admin');
   });
 
-  test('rejects a weak or reused new password', async () => {
-    const weak = await admin.post('/auth/change-password', { currentPassword: ADMIN_TEMP_PASSWORD, newPassword: 'short' });
-    assert.equal(weak.status, 422);
-    assert.ok(weak.body.error.fields.newPassword);
-
-    const same = await admin.post('/auth/change-password', { currentPassword: ADMIN_TEMP_PASSWORD, newPassword: ADMIN_TEMP_PASSWORD });
-    assert.equal(same.status, 422);
-
-    const wrongCurrent = await admin.post('/auth/change-password', { currentPassword: 'not-the-password-123', newPassword: ADMIN_PASSWORD });
-    assert.equal(wrongCurrent.status, 422);
-    assert.ok(wrongCurrent.body.error.fields.currentPassword);
-  });
-
-  test('changing the password unlocks the account and revokes other sessions', async () => {
-    const other = new Agent();
-    assert.equal((await other.login(ADMIN_EMAIL, ADMIN_TEMP_PASSWORD)).status, 200);
-
-    const changed = await admin.post('/auth/change-password', { currentPassword: ADMIN_TEMP_PASSWORD, newPassword: ADMIN_PASSWORD });
-    assert.equal(changed.status, 200);
-    assert.equal(changed.body.redirectTo, '/admin');
-
-    assert.equal((await admin.get('/admin/overview')).status, 200, 'current session keeps working');
-    assert.equal((await other.get('/auth/session')).status, 401, 'other sessions are revoked');
-    assert.equal((await new Agent().login(ADMIN_EMAIL, ADMIN_TEMP_PASSWORD)).status, 401, 'old password no longer works');
+  test('a reset link expires in 30 minutes', async () => {
+    const { rows } = await db.query('select id from app.users where email = $1', [ADMIN_EMAIL]);
+    const issued = await issueAccessToken(db, { userId: rows[0].id, purpose: 'reset', ttlMs: config.tokens.selfResetTtlMs });
+    const expected = Date.now() + 30 * 60 * 1000;
+    assert.equal(config.tokens.selfResetTtlMs, 30 * 60 * 1000);
+    assert.equal(config.tokens.adminResetTtlMs, 30 * 60 * 1000);
+    assert.ok(Math.abs(issued.expiresAt.getTime() - expected) < 60_000);
+    await db.query("delete from app.password_reset_tokens where purpose = 'reset'");
   });
 });
 
@@ -250,13 +238,3 @@ describe('forgot password', () => {
   });
 });
 
-describe('employee self-service password', () => {
-  test('employee can change their own password', async () => {
-    const { input, password, agent } = await createActiveEmployee(admin);
-    const r = await agent.post('/auth/change-password', { currentPassword: password, newPassword: 'Brand-New-Pass-2026!' });
-    assert.equal(r.status, 200);
-    assert.equal(r.body.redirectTo, '/employee');
-    assert.equal((await new Agent().login(input.email, password)).status, 401);
-    assert.equal((await new Agent().login(input.email, 'Brand-New-Pass-2026!')).status, 200);
-  });
-});

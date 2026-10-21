@@ -58,7 +58,7 @@ export async function updateSelfProfile({ db, req, res }) {
 
 /** Serves the signed-in user's avatar image. @type {import('../router.js').Handler} */
 export async function getOwnAvatar({ db, req, res }) {
-  const session = await requireSession(db, req, { allowPasswordChangeRequired: true });
+  const session = await requireSession(db, req);
   const avatar = await loadUserAvatar(db, session.user.id);
   if (!avatar) {
     res.statusCode = 404;

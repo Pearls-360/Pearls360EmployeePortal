@@ -19,20 +19,16 @@ export async function fetchSession() {
  * Page guard: sends the visitor to the right place before showing a protected
  * page. This only decides what the browser renders — every API call is
  * authorized again on the server.
- * @param {{ role?: 'admin' | 'employee', allowPasswordChange?: boolean }} opts
+ * @param {{ role?: 'admin' | 'employee' }} opts
  * @returns {Promise<CurrentUser | null>}
  */
-export async function requirePage({ role, allowPasswordChange = false }) {
+export async function requirePage({ role } = {}) {
   const session = await fetchSession();
   if (!session) {
     window.location.replace('/auth/login');
     return null;
   }
   const { user, home } = session;
-  if (user.mustChangePassword && !allowPasswordChange) {
-    window.location.replace('/auth/change-password');
-    return null;
-  }
   if (role && user.role !== role) {
     window.location.replace(home);
     return null;

@@ -17,9 +17,8 @@ import { isValidEmail, normalizeEmail } from '../validation.js';
 
 const INVALID_LOGIN = 'The email or password you entered is incorrect.';
 
-/** @param {{ role: string, mustChangePassword: boolean }} user */
+/** @param {{ role: string }} user */
 export function homeFor(user) {
-  if (user.mustChangePassword) return '/auth/change-password';
   return user.role === 'admin' ? '/admin' : '/employee';
 }
 
@@ -82,7 +81,7 @@ export async function logout({ db, req, res }) {
 
 /** @type {import('../router.js').Handler} */
 export async function currentSession({ db, req, res }) {
-  const session = await requireSession(db, req, { allowPasswordChangeRequired: true });
+  const session = await requireSession(db, req);
   const { user } = session;
   const { rows } = await db.query(
     `select theme, display_name, avatar_mime is not null as has_avatar, avatar_updated_at,
@@ -112,40 +111,6 @@ export async function currentSession({ db, req, res }) {
 export async function entry({ db, req, res }) {
   const session = await validateSessionToken(db, readSessionCookie(req)).catch(() => null);
   redirect(res, session ? homeFor(session.user) : '/auth/login');
-}
-
-/** @type {import('../router.js').Handler} */
-export async function changePassword({ db, req, res }) {
-  const session = await requireSession(db, req, { allowPasswordChangeRequired: true });
-  const body = await readJson(req);
-  const current = typeof body.currentPassword === 'string' ? body.currentPassword : '';
-  const next = body.newPassword;
-
-  await rateLimit(db, `change-password:${session.user.id}`, { limit: 10, windowSeconds: 15 * 60 });
-
-  const problem = passwordProblem(next, { email: session.user.email });
-  if (problem) throw new HttpError(422, problem, { code: 'VALIDATION', fields: { newPassword: problem } });
-
-  const { rows } = await db.query('select password_hash from app.users where id = $1', [session.user.id]);
-  if (!(await verifyPassword(rows[0]?.password_hash, current))) {
-    throw new HttpError(422, 'Your current password is incorrect.', { code: 'VALIDATION', fields: { currentPassword: 'Your current password is incorrect.' } });
-  }
-  if (current === next) {
-    const msg = 'Choose a password different from your current one.';
-    throw new HttpError(422, msg, { code: 'VALIDATION', fields: { newPassword: msg } });
-  }
-
-  const hash = await hashPassword(/** @type {string} */ (next));
-  await db.tx(async (tx) => {
-    await tx.query(
-      `update app.users set password_hash = $2, must_change_password = false, password_changed_at = now() where id = $1`,
-      [session.user.id, hash]
-    );
-    await revokeUserSessions(tx, session.user.id, 'password_changed', session.id);
-    await audit(tx, { actorId: session.user.id, action: 'auth.password_changed', targetType: 'user', targetId: session.user.id, ip: clientIp(req) });
-  });
-
-  sendJson(res, 200, { ok: true, redirectTo: homeFor({ role: session.user.role, mustChangePassword: false }) });
 }
 
 /** Saves the signed-in account's light or dark preference. @type {import('../router.js').Handler} */

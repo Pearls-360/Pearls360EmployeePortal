@@ -3,6 +3,7 @@ import { setDb } from '../server/db.js';
 import { migrate } from '../server/migrations.js';
 import { handleApi } from '../server/router.js';
 import { createAdmin } from '../server/bootstrap.js';
+import { hashPassword } from '../server/auth/passwords.js';
 import { config } from '../server/config.js';
 
 export const ORIGIN = config.appOrigin;
@@ -122,13 +123,16 @@ export const ADMIN_EMAIL = 'director@example.test';
 export const ADMIN_TEMP_PASSWORD = 'Temp-Admin-Pass-2026!';
 export const ADMIN_PASSWORD = 'Real-Admin-Pass-2026!';
 
-/** Bootstraps an admin and completes the forced password change. Returns a signed-in agent. */
+/** Bootstraps an admin with the standing password. Returns a signed-in agent. */
 export async function setupAdmin(db) {
   await createAdmin(db, { email: ADMIN_EMAIL, password: ADMIN_TEMP_PASSWORD });
+  await db.query(
+    `update app.users set password_hash = $2, must_change_password = false, password_changed_at = now() where email = $1`,
+    [ADMIN_EMAIL, await hashPassword(ADMIN_PASSWORD)]
+  );
   const admin = new Agent();
-  await admin.login(ADMIN_EMAIL, ADMIN_TEMP_PASSWORD);
-  const r = await admin.post('/auth/change-password', { currentPassword: ADMIN_TEMP_PASSWORD, newPassword: ADMIN_PASSWORD });
-  if (r.status !== 200) throw new Error(`admin password change failed: ${JSON.stringify(r.body)}`);
+  const login = await admin.login(ADMIN_EMAIL, ADMIN_PASSWORD);
+  if (login.status !== 200) throw new Error(`admin sign-in failed: ${JSON.stringify(login.body)}`);
   return admin;
 }
 

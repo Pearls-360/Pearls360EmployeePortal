@@ -26,7 +26,6 @@ const ROUTES = [
   ['POST', '/auth/login', auth.login],
   ['POST', '/auth/logout', auth.logout],
   ['GET', '/auth/session', auth.currentSession],
-  ['POST', '/auth/change-password', auth.changePassword],
   ['PATCH', '/auth/theme', auth.updateTheme],
   ['POST', '/auth/forgot-password', auth.forgotPassword],
   ['POST', '/auth/token-info', auth.accessTokenInfo],

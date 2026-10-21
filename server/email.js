@@ -39,7 +39,7 @@ export async function sendAccessLinkEmail({ to, purpose, url }) {
     url,
     note: activation
       ? 'This link can be used once and expires in 72 hours.'
-      : 'This link can be used once and expires soon. If you did not request this, you can ignore this email.'
+      : 'This link can be used once and expires in 30 minutes. If you did not request this, you can ignore this email.'
   });
 
   const response = await fetch('https://api.resend.com/emails', {

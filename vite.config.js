@@ -22,8 +22,7 @@ export const PAGES = [
   'employee/profile',
   'employee/settings',
   'auth/set-password',
-  'auth/forgot-password',
-  'auth/change-password'
+  'auth/forgot-password'
 ];
 
 /** Older public paths kept so existing links still open. */
@@ -31,7 +30,8 @@ const PAGE_ALIASES = {
   login: 'auth/login',
   'set-password': 'auth/set-password',
   'forgot-password': 'auth/forgot-password',
-  'change-password': 'auth/change-password'
+  'change-password': 'auth/forgot-password',
+  'auth/change-password': 'auth/forgot-password'
 };
 
 /**

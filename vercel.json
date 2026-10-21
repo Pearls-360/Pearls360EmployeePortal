@@ -26,10 +26,10 @@
     { "source": "/employee/settings", "destination": "/employee/settings/index.html" },
     { "source": "/set-password", "destination": "/auth/set-password/index.html" },
     { "source": "/forgot-password", "destination": "/auth/forgot-password/index.html" },
-    { "source": "/change-password", "destination": "/auth/change-password/index.html" },
+    { "source": "/change-password", "destination": "/auth/forgot-password/index.html" },
     { "source": "/auth/set-password", "destination": "/auth/set-password/index.html" },
     { "source": "/auth/forgot-password", "destination": "/auth/forgot-password/index.html" },
-    { "source": "/auth/change-password", "destination": "/auth/change-password/index.html" }
+    { "source": "/auth/change-password", "destination": "/auth/forgot-password/index.html" }
   ],
   "headers": [
     {

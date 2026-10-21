@@ -437,7 +437,7 @@ export async function issueAdminAccessLink({ db, req, res, params }) {
   const session = await requireSession(db, req, { roles: ['admin'] });
   const id = assertUuid(params.id, 'Administrator not found.');
   if (id === session.user.id) {
-    throw new HttpError(409, 'Use Change Password for your own account.', { code: 'CONFLICT' });
+    throw new HttpError(409, 'Use Forgot password on the sign-in page to reset your own password.', { code: 'CONFLICT' });
   }
   const account = await loadAdminAccount(db, id);
   if (account.accountStatus === 'inactive') {

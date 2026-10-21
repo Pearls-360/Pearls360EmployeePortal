@@ -1,6 +1,6 @@
 import { after, before, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { Agent, call, createActiveEmployee, createTestDb, employeeInput, nextIp, setupAdmin, tokenFromUrl } from './helpers.js';
+import { ADMIN_EMAIL, Agent, call, createActiveEmployee, createTestDb, employeeInput, nextIp, setupAdmin, tokenFromUrl } from './helpers.js';
 
 /** @type {Awaited<ReturnType<typeof createTestDb>>} */
 let db;
@@ -230,7 +230,7 @@ describe('directory, details, edits and audit', () => {
     const r = await admin.get('/admin/audit-logs?limit=200');
     assert.equal(r.status, 200);
     const actions = new Set(r.body.entries.map((e) => e.action));
-    for (const a of ['admin.bootstrap', 'auth.login', 'auth.password_changed', 'employee.created', 'employee.deactivated', 'employee.activated', 'employee.password_reset_initiated', 'auth.password_reset_completed']) {
+    for (const a of ['admin.bootstrap', 'auth.login', 'employee.created', 'employee.deactivated', 'employee.activated', 'employee.password_reset_initiated', 'auth.password_reset_completed']) {
       assert.ok(actions.has(a), `audit has ${a}`);
     }
     const created = r.body.entries.find((e) => e.action === 'employee.created');
@@ -269,7 +269,7 @@ describe('directory, details, edits and audit', () => {
     assert.equal((await next.get('/admin/overview')).status, 200);
     assert.equal((await next.get('/admin/employees')).status, 200);
 
-    const self = await admin.post(`/admin/admins/${(await db.query("select id from app.users where email = 'admin@pearls.test'")).rows[0].id}/status`, { status: 'inactive' });
+    const self = await admin.post(`/admin/admins/${(await db.query('select id from app.users where email = $1', [ADMIN_EMAIL])).rows[0].id}/status`, { status: 'inactive' });
     assert.equal(self.status, 409);
 
     const off = await admin.post(`/admin/admins/${created.body.admin.id}/status`, { status: 'inactive' });
