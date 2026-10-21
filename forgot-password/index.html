@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Forgot Password | Pearls360 Employee Portal</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f1f1ef">
+  <link rel="icon" type="image/png" href="/src/assets/img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <script src="/boot.js"></script>
+  <script type="module" src="/src/pages/forgot-password.js"></script>
+</head>
+<body>
+<main class="auth">
+  <aside class="auth__visual" aria-hidden="true">
+    <img class="auth__photo" src="/src/assets/img/login-feature.jpg" alt="">
+  </aside>
+
+  <section class="auth__panel textured glow" aria-labelledby="auth-title">
+    <div class="auth__inner">
+      <div class="auth__brand">
+        <a class="brand" href="/login">
+          <img class="brand__mark brand__mark--spin" src="/src/assets/img/logo.png" alt="" width="44" height="44">
+          <span class="brand__text">PEARLS 360<small>Design &amp; Planning</small></span>
+        </a>
+      </div>
+
+      <header class="auth__head">
+        <span class="eyebrow">Pearls360 Workspace</span>
+        <h1 id="auth-title">Reset Password</h1>
+      </header>
+
+      <form class="form auth__form" id="forgot-form" novalidate>
+        <div class="form__alert" data-alert role="alert" tabindex="-1" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.2v.3"/></svg>
+          <span data-alert-text></span>
+        </div>
+
+        <div class="field">
+          <label for="email">Email address</label>
+          <div class="field__control">
+            <input id="email" name="email" type="email" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Enter your work email" required>
+          </div>
+        </div>
+
+        <button class="btn btn--block" type="submit">Send Reset Link</button>
+        <a class="link auth__back" href="/login">Back to sign in</a>
+      </form>
+    </div>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,105 @@
+/* ==========================================================================
+   Employee Portal — login + authenticated shell
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Login (split layout: editorial image + form panel)
+   -------------------------------------------------------------------------- */
+.auth {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(min(100%, 480px), .95fr);
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+@media (min-width: 901px) {
+  /* Photo stays fixed; only the form panel scrolls if the window is very short */
+  .auth { height: 100vh; height: 100dvh; }
+  .auth__panel { overflow-y: auto; }
+}
+
+.auth__visual {
+  position: relative;
+  overflow: hidden;
+  background: var(--black);
+}
+.auth__photo {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+.auth__panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--light);
+  padding: clamp(1.75rem, 4vw, 3rem) var(--gutter);
+}
+@media (min-width: 901px) {
+  .auth__panel { padding-left: clamp(2.5rem, 5vw, 5.5rem); padding-right: clamp(2.5rem, 5vw, 5.5rem); }
+}
+.auth__inner {
+  width: 100%;
+  max-width: 420px;
+  margin: auto;
+  padding: clamp(1.5rem, 5vh, 3rem) 0;
+}
+.auth__brand { margin-bottom: clamp(2.5rem, 7vh, 4.5rem); }
+.auth__brand .brand__mark { width: 56px; height: 56px; }
+.brand__mark--spin { animation: seal-spin 24s linear infinite; }
+.auth__head { margin-bottom: 2.2rem; }
+.auth__head .eyebrow { margin-bottom: 1rem; }
+.auth__head h1 { margin: 0; font-size: clamp(2.8rem, 4.6vw, 3.6rem); line-height: 1.2; }
+
+.auth__form .btn { margin-top: .6rem; }
+
+/* Password field with reveal toggle */
+.field--password input { padding-right: 3rem; }
+.field__toggle {
+  position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  width: 44px; height: 44px;
+  display: grid; place-items: center;
+  color: var(--ink-muted);
+  transition: color .3s ease;
+}
+.field__toggle:hover, .field__toggle[aria-pressed="true"] { color: var(--black); }
+.field__toggle svg { width: 18px; height: 18px; }
+.field__toggle .icon-hide { display: none; }
+.field__toggle[aria-pressed="true"] .icon-show { display: none; }
+.field__toggle[aria-pressed="true"] .icon-hide { display: block; }
+
+/* Entrance */
+.js .auth__inner > * { opacity: 0; transform: translateY(14px); }
+.js body.is-ready .auth__inner > * {
+  opacity: 1; transform: none;
+  transition: opacity .7s ease, transform .9s var(--ease-out);
+}
+.js body.is-ready .auth__inner > :nth-child(2) { transition-delay: .08s; }
+.js body.is-ready .auth__inner > :nth-child(3) { transition-delay: .16s; }
+.js body.is-ready .auth__inner > :nth-child(4) { transition-delay: .24s; }
+.js body.is-ready .auth__inner > :nth-child(5) { transition-delay: .32s; }
+
+@media (max-width: 900px) {
+  .auth { grid-template-columns: 1fr; }
+  .auth__visual { display: none; }
+  .auth__inner { margin-top: 0; }
+}
+@media (max-height: 640px) and (min-width: 901px) {
+  .auth__brand { margin-bottom: 2rem; }
+  .auth__inner { padding: 1.5rem 0; }
+}
+
+/* Small helpers for the auth-layout pages */
+.auth__sub { margin: .5rem 0 0; color: var(--ink-muted); font-size: var(--text-sm); overflow-wrap: anywhere; }
+.auth__back { justify-self: center; font-size: var(--text-sm); color: var(--ink-muted); }
+.auth__row { display: flex; justify-content: space-between; gap: 1rem; font-size: var(--text-sm); color: var(--ink-muted); }
+.auth__row [hidden] + .link { margin-left: auto; }
+.field__link { display: inline-block; margin-top: .7rem; font-size: .8rem; color: var(--ink-muted); text-decoration: underline; text-underline-offset: 3px; transition: color .3s ease; }
+.field__link:hover { color: var(--black); }
+
+/* Hold protected content until the session has been verified */
+[data-auth="pending"] .auth { visibility: hidden; }
+[data-auth="pending"]::after {
+  content: ""; position: fixed; top: 50%; left: 50%; width: 28px; height: 28px; margin: -14px 0 0 -14px;
+  border: 1px solid var(--black); border-right-color: transparent; border-radius: 50%;
+  animation: spin .8s linear infinite;
+}

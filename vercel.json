@@ -1,6 +1,44 @@
 {
-  "functions": {
-    "api/inquiry.js": { "maxDuration": 30 },
-    "api/career.js": { "maxDuration": 30 }
-  }
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/", "destination": "/api?route=entry" },
+    { "source": "/api/:path*", "destination": "/api?route=:path*" },
+    { "source": "/login", "destination": "/login/index.html" },
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/admins", "destination": "/admin/admins/index.html" },
+    { "source": "/admin/employees", "destination": "/admin/employees/index.html" },
+    { "source": "/admin/library", "destination": "/admin/library/index.html" },
+    { "source": "/admin/resources", "destination": "/admin/resources/index.html" },
+    { "source": "/admin/invoices", "destination": "/admin/invoices/index.html" },
+    { "source": "/admin/access", "destination": "/admin/access/index.html" },
+    { "source": "/admin/activity", "destination": "/admin/activity/index.html" },
+    { "source": "/admin/profile", "destination": "/admin/profile/index.html" },
+    { "source": "/admin/settings", "destination": "/admin/settings/index.html" },
+    { "source": "/employee", "destination": "/employee/index.html" },
+    { "source": "/employee/resources", "destination": "/employee/resources/index.html" },
+    { "source": "/employee/invoices", "destination": "/employee/invoices/index.html" },
+    { "source": "/employee/profile", "destination": "/employee/profile/index.html" },
+    { "source": "/employee/settings", "destination": "/employee/settings/index.html" },
+    { "source": "/set-password", "destination": "/set-password/index.html" },
+    { "source": "/forgot-password", "destination": "/forgot-password/index.html" },
+    { "source": "/change-password", "destination": "/change-password/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'" },
+        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "no-referrer" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    }
+  ]
 }

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings | Pearls360 Employee Portal</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f1f1ef">
+  <link rel="icon" type="image/png" href="/src/assets/img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <script src="/boot.js"></script>
+  <script type="module" src="/src/pages/admin-settings.js"></script>
+</head>
+<body data-auth="pending">
+<div class="app" data-shell>
+  <aside class="sidebar" data-sidebar></aside>
+  <div class="sidebar-backdrop" data-sidebar-backdrop hidden></div>
+  <div class="app-body">
+    <header class="topbar" data-topbar></header>
+    <main class="app-content" id="main">
+      <section class="dash-intro">
+        <span class="eyebrow">Account</span>
+        <h1>Settings</h1>
+      </section>
+
+      <div class="panel-grid panel-grid--3">
+        <section class="panel" aria-labelledby="appearance-title">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title" id="appearance-title">Appearance</h2>
+              <p>On is dark. Off is light.</p>
+            </div>
+          </div>
+          <label class="theme-toggle">
+            <input type="checkbox" data-theme-toggle role="switch" aria-labelledby="appearance-title">
+            <span class="theme-toggle__track" aria-hidden="true"><span class="theme-toggle__thumb"></span></span>
+            <span class="theme-toggle__label" data-theme-label>Light</span>
+          </label>
+        </section>
+        <section class="panel">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title">Security</h2>
+              <p>Changing your password signs you out on every other device.</p>
+            </div>
+          </div>
+          <a class="btn" href="/change-password">Change Password</a>
+        </section>
+        <section class="panel">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title">Session</h2>
+              <p>Sign out of this browser when you are done.</p>
+            </div>
+          </div>
+          <button class="btn btn--ghost" type="button" data-sign-out>Logout</button>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

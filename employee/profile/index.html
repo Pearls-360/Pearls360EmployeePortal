@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Profile | Pearls360 Employee Portal</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f1f1ef">
+  <link rel="icon" type="image/png" href="/src/assets/img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <script src="/boot.js"></script>
+  <script type="module" src="/src/pages/employee-profile.js"></script>
+</head>
+<body data-auth="pending">
+<div class="app" data-shell>
+  <aside class="sidebar" data-sidebar></aside>
+  <div class="sidebar-backdrop" data-sidebar-backdrop hidden></div>
+  <div class="app-body">
+    <header class="topbar" data-topbar></header>
+    <main class="app-content" id="main">
+      <div class="form__alert" data-page-alert role="alert" hidden><span data-alert-text></span></div>
+
+      <section class="profile-hero">
+        <div class="profile-avatar" data-avatar-wrap>
+          <span class="profile-avatar__initial" data-avatar-initial>P</span>
+          <img data-avatar-img hidden alt="">
+          <label class="profile-avatar__actions">
+            Change photo
+            <input class="sr-only" type="file" accept="image/jpeg,image/png,image/webp" data-avatar-input>
+          </label>
+        </div>
+        <div class="profile-hero__text">
+          <h2 data-profile-name>Employee</h2>
+          <p data-profile-email></p>
+          <div class="profile-hero__meta">
+            <span data-profile-role></span>
+            <span data-profile-code></span>
+          </div>
+          <div class="form-actions" style="margin-top: 1.1rem">
+            <button class="btn btn--ghost btn--sm" type="button" data-remove-avatar hidden>Remove photo</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="panel-grid">
+        <section class="profile-form-card">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title">Editable details</h2>
+              <p>Update your name and phone number.</p>
+            </div>
+          </div>
+          <form class="form" id="profile-form" novalidate>
+            <div class="form__alert form__alert--success" data-form-alert role="status" hidden><span data-alert-text></span></div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="firstName">First name</label>
+                <div class="field__control"><input id="firstName" name="firstName" maxlength="100" required autocomplete="given-name"></div>
+              </div>
+              <div class="field">
+                <label for="lastName">Last name</label>
+                <div class="field__control"><input id="lastName" name="lastName" maxlength="100" required autocomplete="family-name"></div>
+              </div>
+              <div class="field full">
+                <label for="phone">Phone number</label>
+                <div class="field__control"><input id="phone" name="phone" type="tel" maxlength="20" autocomplete="tel" placeholder="Optional"></div>
+              </div>
+              <div class="field full">
+                <label for="email">Email</label>
+                <div class="field__control"><input id="email" type="email" readonly tabindex="-1"></div>
+                <p class="field__hint">Ask your administrator if your work email needs updating.</p>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn" type="submit" data-save>Save Changes</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="panel__head"><h2 class="panel__title">Employment</h2></div>
+          <dl class="details">
+            <dt>Employee ID</dt><dd data-field="employeeCode"></dd>
+            <dt>Department</dt><dd data-field="department"></dd>
+            <dt>Job title</dt><dd data-field="designation"></dd>
+            <dt>Joining date</dt><dd data-field="joiningDate"></dd>
+            <dt>Status</dt><dd data-field="employmentStatus"></dd>
+          </dl>
+          <p class="field__hint">Employment details are managed by your administrator.</p>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

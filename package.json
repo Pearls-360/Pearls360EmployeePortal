@@ -1,0 +1,35 @@
+{
+  "name": "pearls360-employee-portal",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "typecheck": "tsc -p jsconfig.json && tsc -p jsconfig.server.json",
+    "test": "node --test --test-concurrency=1 \"tests/**/*.test.js\"",
+    "check": "npm run lint && npm run typecheck && npm test && npm run build",
+    "db:migrate": "node --env-file-if-exists=.env.local scripts/migrate.js",
+    "admin:create": "node --env-file-if-exists=.env.local scripts/create-admin.js"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.11",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.5",
+    "@types/pg": "^8.23.1",
+    "eslint": "^10.13.0",
+    "globals": "^17.13.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  },
+  "dependencies": {
+    "@vercel/functions": "^3.10.2",
+    "argon2": "^0.45.1",
+    "pg": "^8.23.1"
+  }
+}

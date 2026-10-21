@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard | Pearls360 Employee Portal</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f1f1ef">
+  <link rel="icon" type="image/png" href="/src/assets/img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <script src="/boot.js"></script>
+  <script type="module" src="/src/pages/admin.js"></script>
+</head>
+<body data-auth="pending">
+<div class="app" data-shell>
+  <aside class="sidebar" data-sidebar></aside>
+  <div class="sidebar-backdrop" data-sidebar-backdrop hidden></div>
+  <div class="app-body">
+    <header class="topbar" data-topbar></header>
+    <main class="app-content" id="main">
+      <div class="form__alert" data-page-alert role="alert" hidden><span data-alert-text></span></div>
+
+      <section class="stats-grid stats-grid--3 is-loading" aria-label="Portal overview" data-stats>
+        <a class="stat-card" href="/admin/employees">
+          <span class="stat-card__arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+          <span class="stat-card__value" data-stat="total">–</span>
+          <span class="stat-card__label">Total Employees</span>
+        </a>
+        <a class="stat-card" href="/admin/invoices">
+          <span class="stat-card__arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+          <span class="stat-card__value" data-stat="invoices">0</span>
+          <span class="stat-card__label">Invoices</span>
+        </a>
+        <a class="stat-card" href="/admin/library">
+          <span class="stat-card__arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+          <span class="stat-card__value" data-stat="resources">0</span>
+          <span class="stat-card__label">Total Resources</span>
+        </a>
+      </section>
+
+      <section class="panel" aria-labelledby="quick-title">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title" id="quick-title">Quick Actions</h2>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <a class="quick-action" href="/admin/employees?add=1">
+              <span class="quick-action__label">Add Employee</span>
+              <span class="quick-action__hint">Create an account and issue an activation link</span>
+            </a>
+            <a class="quick-action" href="/admin/admins?add=1">
+              <span class="quick-action__label">Add Admin</span>
+              <span class="quick-action__hint">Another administrator with the same access as you</span>
+            </a>
+            <a class="quick-action" href="/admin/library">
+              <span class="quick-action__label">Upload Resource</span>
+              <span class="quick-action__hint">Internal library is not available yet</span>
+            </a>
+            <a class="quick-action" href="/admin/invoices">
+              <span class="quick-action__label">Create Invoice</span>
+              <span class="quick-action__hint">Employee invoices are not available yet</span>
+            </a>
+            <a class="quick-action" href="/admin/access">
+              <span class="quick-action__label">Manage Access</span>
+              <span class="quick-action__hint">Access control is not available yet</span>
+            </a>
+          </div>
+      </section>
+    </main>
+  </div>
+</div>
+</body>
+</html>

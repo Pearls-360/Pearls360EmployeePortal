@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard | Pearls360 Employee Portal</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f1f1ef">
+  <link rel="icon" type="image/png" href="/src/assets/img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <script src="/boot.js"></script>
+  <script type="module" src="/src/pages/employee.js"></script>
+</head>
+<body data-auth="pending">
+<div class="app" data-shell>
+  <aside class="sidebar" data-sidebar></aside>
+  <div class="sidebar-backdrop" data-sidebar-backdrop hidden></div>
+  <div class="app-body">
+    <header class="topbar" data-topbar></header>
+    <main class="app-content" id="main">
+      <div class="form__alert" data-page-alert role="alert" hidden><span data-alert-text></span></div>
+
+      <section class="dash-intro">
+        <span class="eyebrow">Workspace</span>
+        <h1 data-welcome>Welcome</h1>
+        <p data-role-line></p>
+      </section>
+
+      <div class="panel-grid">
+        <section class="panel" aria-labelledby="resources-title">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title" id="resources-title">My Resources</h2>
+              <p>Documents and training assigned to you.</p>
+            </div>
+            <a class="link" href="/employee/resources">Browse</a>
+          </div>
+          <p class="empty">Nothing has been published for you yet. The Art of Pearls360 and other materials will appear here when they are available.</p>
+        </section>
+
+        <section class="panel" aria-labelledby="invoices-title">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title" id="invoices-title">My Invoices</h2>
+              <p>Your payment status and history.</p>
+            </div>
+            <a class="link" href="/employee/invoices">History</a>
+          </div>
+          <p class="empty">You have no invoices yet. Invoice history will show here once the module is available.</p>
+        </section>
+
+        <section class="panel" aria-labelledby="profile-title">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title" id="profile-title">My Profile</h2>
+            </div>
+            <a class="link" href="/employee/profile">Details</a>
+          </div>
+          <dl class="details">
+            <dt>Employee ID</dt><dd data-field="employeeCode"></dd>
+            <dt>Department</dt><dd data-field="department"></dd>
+            <dt>Designation</dt><dd data-field="designation"></dd>
+            <dt>Joining date</dt><dd data-field="joiningDate"></dd>
+          </dl>
+        </section>
+
+        <section class="panel" aria-labelledby="quick-title">
+          <div class="panel__head"><h2 class="panel__title" id="quick-title">Quick Access</h2></div>
+          <div class="quick-actions">
+            <a class="quick-action" href="/employee/resources">
+              <span class="quick-action__label">Browse My Resources</span>
+              <span class="quick-action__hint">Documents and training available to you</span>
+            </a>
+            <a class="quick-action" href="/employee/invoices">
+              <span class="quick-action__label">View My Invoices</span>
+              <span class="quick-action__hint">Your own invoices only</span>
+            </a>
+            <a class="quick-action" href="/employee/profile">
+              <span class="quick-action__label">Update My Profile</span>
+              <span class="quick-action__hint">Name, phone and photo</span>
+            </a>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

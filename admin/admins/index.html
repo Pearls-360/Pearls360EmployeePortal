@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admins | Pearls360 Employee Portal</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f1f1ef">
+  <link rel="icon" type="image/png" href="/src/assets/img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <script src="/boot.js"></script>
+  <script type="module" src="/src/pages/admin-admins.js"></script>
+</head>
+<body data-auth="pending">
+<div class="app" data-shell>
+  <aside class="sidebar" data-sidebar></aside>
+  <div class="sidebar-backdrop" data-sidebar-backdrop hidden></div>
+  <div class="app-body">
+    <header class="topbar" data-topbar></header>
+    <main class="app-content" id="main">
+      <div class="page-toolbar">
+        <div>
+          <p class="topbar__eyebrow" style="margin:0">Management</p>
+          <p data-admin-count></p>
+        </div>
+        <div class="page-toolbar__actions">
+          <button class="btn" type="button" data-add-admin>Add Admin</button>
+        </div>
+      </div>
+
+      <section class="panel" aria-labelledby="admins-title">
+        <div class="panel__head">
+          <div>
+            <h2 class="panel__title" id="admins-title">Administrators</h2>
+            <p>These accounts have the same access as you.</p>
+          </div>
+        </div>
+        <div class="form__alert" data-admins-alert role="alert" hidden><span data-alert-text></span></div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Account</th>
+              </tr>
+            </thead>
+            <tbody data-admin-rows></tbody>
+          </table>
+        </div>
+        <p class="empty" data-admins-empty hidden>No administrators yet.</p>
+      </section>
+    </main>
+  </div>
+</div>
+
+<dialog class="drawer" id="admin-dialog" aria-labelledby="admin-dialog-title">
+  <div class="drawer__inner">
+    <div class="drawer__head">
+      <div>
+        <span class="eyebrow eyebrow--plain" data-admin-eyebrow>Administrator</span>
+        <h2 class="drawer__title" id="admin-dialog-title">Add Admin</h2>
+      </div>
+      <button class="drawer__close" type="button" data-admin-close aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="drawer__body">
+      <div class="form__alert" data-admin-dialog-alert role="alert" tabindex="-1" hidden><span data-alert-text></span></div>
+      <div class="link-box" data-admin-link-box hidden>
+        <p data-admin-link-message></p>
+        <div class="link-box__row">
+          <label class="sr-only" for="admin-access-link">One-time link</label>
+          <input id="admin-access-link" type="text" readonly data-admin-link-input>
+          <button class="btn btn--sm" type="button" data-admin-copy>Copy</button>
+        </div>
+      </div>
+      <form class="form" id="admin-form" novalidate>
+        <p class="field__hint">This person will be able to do everything you can, including managing employees and other admins.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="admin-firstName">First name</label>
+            <div class="field__control"><input id="admin-firstName" name="firstName" autocomplete="off" maxlength="100" required></div>
+          </div>
+          <div class="field">
+            <label for="admin-lastName">Last name</label>
+            <div class="field__control"><input id="admin-lastName" name="lastName" autocomplete="off" maxlength="100" required></div>
+          </div>
+          <div class="field full">
+            <label for="admin-email">Email</label>
+            <div class="field__control"><input id="admin-email" name="email" type="email" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="254" required></div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" type="submit" data-admin-save>Create Admin</button>
+          <button class="link" type="button" data-admin-close>Cancel</button>
+        </div>
+      </form>
+      <section class="drawer__section" data-admin-account hidden>
+        <h3>Account</h3>
+        <dl class="details">
+          <dt>Status</dt><dd data-admin-status></dd>
+          <dt>Last sign-in</dt><dd data-admin-login></dd>
+        </dl>
+        <div class="form-actions">
+          <button class="btn btn--ghost btn--sm" type="button" data-admin-access></button>
+          <button class="btn btn--ghost btn--sm" type="button" data-admin-toggle></button>
+        </div>
+      </section>
+    </div>
+  </div>
+</dialog>
+</body>
+</html>

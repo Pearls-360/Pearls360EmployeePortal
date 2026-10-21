@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Profile | Pearls360 Employee Portal</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f1f1ef">
+  <link rel="icon" type="image/png" href="/src/assets/img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <script src="/boot.js"></script>
+  <script type="module" src="/src/pages/admin-profile.js"></script>
+</head>
+<body data-auth="pending">
+<div class="app" data-shell>
+  <aside class="sidebar" data-sidebar></aside>
+  <div class="sidebar-backdrop" data-sidebar-backdrop hidden></div>
+  <div class="app-body">
+    <header class="topbar" data-topbar></header>
+    <main class="app-content" id="main">
+      <div class="form__alert" data-page-alert role="alert" hidden><span data-alert-text></span></div>
+
+      <section class="profile-hero">
+        <div class="profile-avatar" data-avatar-wrap>
+          <span class="profile-avatar__initial" data-avatar-initial>P</span>
+          <img data-avatar-img hidden alt="">
+          <label class="profile-avatar__actions">
+            Change photo
+            <input class="sr-only" type="file" accept="image/jpeg,image/png,image/webp" data-avatar-input>
+          </label>
+        </div>
+        <div class="profile-hero__text">
+          <h2 data-profile-name>Administrator</h2>
+          <p data-profile-email></p>
+          <div class="profile-hero__meta">
+            <span>Role · Administrator</span>
+            <span data-last-login></span>
+          </div>
+          <div class="form-actions" style="margin-top: 1.1rem">
+            <button class="btn btn--ghost btn--sm" type="button" data-remove-avatar hidden>Remove photo</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="profile-form-card" style="max-width: 640px">
+        <div class="panel__head">
+          <div>
+            <h2 class="panel__title">Edit profile</h2>
+            <p>Update how your name appears across the portal.</p>
+          </div>
+        </div>
+        <form class="form" id="profile-form" novalidate>
+          <div class="form__alert form__alert--success" data-form-alert role="status" hidden><span data-alert-text></span></div>
+          <div class="form-grid">
+            <div class="field full">
+              <label for="displayName">Display name</label>
+              <div class="field__control"><input id="displayName" name="displayName" maxlength="100" autocomplete="name" placeholder="Optional"></div>
+            </div>
+            <div class="field full">
+              <label for="email">Email</label>
+              <div class="field__control"><input id="email" type="email" readonly tabindex="-1"></div>
+              <p class="field__hint">Email is managed by account setup and cannot be changed here.</p>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn" type="submit" data-save>Save Changes</button>
+            <a class="link" href="/change-password">Change Password</a>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+</div>
+</body>
+</html>
