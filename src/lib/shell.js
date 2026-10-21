@@ -40,7 +40,7 @@ function navFor(role) {
   }
   return {
     home: '/employee',
-    showLogout: true,
+    showLogout: false,
     groups: [
       {
         label: 'Workspace',
