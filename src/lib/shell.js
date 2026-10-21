@@ -123,7 +123,7 @@ export function mountShell({ role, active, title, user }) {
           </div>
           <a class="profile-menu__item" role="menuitem" href="${role === 'admin' ? '/admin/profile' : '/employee/profile'}">My Profile</a>
           <a class="profile-menu__item" role="menuitem" href="${role === 'admin' ? '/admin/settings' : '/employee/settings'}">Settings</a>
-          <a class="profile-menu__item" role="menuitem" href="/change-password">Change Password</a>
+          <a class="profile-menu__item" role="menuitem" href="/auth/change-password">Change Password</a>
           <button class="profile-menu__item profile-menu__item--danger" role="menuitem" type="button" data-sign-out>Logout</button>
         </div>
       </div>

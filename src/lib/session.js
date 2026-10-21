@@ -1,8 +1,9 @@
 import { api } from './api.js';
+import { applyTheme } from './theme.js';
 
 /**
  * @typedef {{ email: string, role: 'admin' | 'employee', mustChangePassword: boolean, firstName: string | null,
- *   displayName?: string | null, hasAvatar?: boolean, avatarUrl?: string | null }} CurrentUser
+ *   displayName?: string | null, hasAvatar?: boolean, avatarUrl?: string | null, theme?: 'light' | 'dark' }} CurrentUser
  */
 
 /** @returns {Promise<{ user: CurrentUser, home: string } | null>} */
@@ -24,18 +25,19 @@ export async function fetchSession() {
 export async function requirePage({ role, allowPasswordChange = false }) {
   const session = await fetchSession();
   if (!session) {
-    window.location.replace('/login');
+    window.location.replace('/auth/login');
     return null;
   }
   const { user, home } = session;
   if (user.mustChangePassword && !allowPasswordChange) {
-    window.location.replace('/change-password');
+    window.location.replace('/auth/change-password');
     return null;
   }
   if (role && user.role !== role) {
     window.location.replace(home);
     return null;
   }
+  if (user.theme === 'dark' || user.theme === 'light') applyTheme(user.theme);
   return user;
 }
 
@@ -43,7 +45,7 @@ export async function signOut() {
   try {
     await api('/auth/logout', { method: 'POST', body: {}, redirectOnAuthError: false });
   } finally {
-    window.location.replace('/login');
+    window.location.replace('/auth/login');
   }
 }
 

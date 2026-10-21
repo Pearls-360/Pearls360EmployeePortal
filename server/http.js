@@ -18,8 +18,8 @@ export class HttpError extends Error {
   }
 }
 
-/** Default JSON body limit. Profile photo uploads send a compressed data-URL (~700 KB). */
-const MAX_BODY_BYTES = 768 * 1024;
+/** JSON body limit. Document uploads send a data-URL for a file up to 2 MB. */
+const MAX_BODY_BYTES = 3.5 * 1024 * 1024;
 
 /** @param {import('node:http').IncomingMessage & { body?: unknown }} req */
 export async function readJson(req) {

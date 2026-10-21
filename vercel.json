@@ -7,7 +7,8 @@
   "rewrites": [
     { "source": "/", "destination": "/api?route=entry" },
     { "source": "/api/:path*", "destination": "/api?route=:path*" },
-    { "source": "/login", "destination": "/login/index.html" },
+    { "source": "/login", "destination": "/auth/login/index.html" },
+    { "source": "/auth/login", "destination": "/auth/login/index.html" },
     { "source": "/admin", "destination": "/admin/index.html" },
     { "source": "/admin/admins", "destination": "/admin/admins/index.html" },
     { "source": "/admin/employees", "destination": "/admin/employees/index.html" },
@@ -23,9 +24,12 @@
     { "source": "/employee/invoices", "destination": "/employee/invoices/index.html" },
     { "source": "/employee/profile", "destination": "/employee/profile/index.html" },
     { "source": "/employee/settings", "destination": "/employee/settings/index.html" },
-    { "source": "/set-password", "destination": "/set-password/index.html" },
-    { "source": "/forgot-password", "destination": "/forgot-password/index.html" },
-    { "source": "/change-password", "destination": "/change-password/index.html" }
+    { "source": "/set-password", "destination": "/auth/set-password/index.html" },
+    { "source": "/forgot-password", "destination": "/auth/forgot-password/index.html" },
+    { "source": "/change-password", "destination": "/auth/change-password/index.html" },
+    { "source": "/auth/set-password", "destination": "/auth/set-password/index.html" },
+    { "source": "/auth/forgot-password", "destination": "/auth/forgot-password/index.html" },
+    { "source": "/auth/change-password", "destination": "/auth/change-password/index.html" }
   ],
   "headers": [
     {

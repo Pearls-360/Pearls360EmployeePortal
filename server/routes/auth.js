@@ -19,7 +19,7 @@ const INVALID_LOGIN = 'The email or password you entered is incorrect.';
 
 /** @param {{ role: string, mustChangePassword: boolean }} user */
 export function homeFor(user) {
-  if (user.mustChangePassword) return '/change-password';
+  if (user.mustChangePassword) return '/auth/change-password';
   return user.role === 'admin' ? '/admin' : '/employee';
 }
 
@@ -85,7 +85,7 @@ export async function currentSession({ db, req, res }) {
   const session = await requireSession(db, req, { allowPasswordChangeRequired: true });
   const { user } = session;
   const { rows } = await db.query(
-    `select display_name, avatar_mime is not null as has_avatar, avatar_updated_at,
+    `select theme, display_name, avatar_mime is not null as has_avatar, avatar_updated_at,
             (select first_name from app.employee_profiles where user_id = $1) as first_name
        from app.users where id = $1`,
     [user.id]
@@ -101,7 +101,8 @@ export async function currentSession({ db, req, res }) {
       firstName,
       displayName,
       hasAvatar: Boolean(meta.has_avatar),
-      avatarUrl: meta.has_avatar ? `/api/auth/avatar?v=${new Date(meta.avatar_updated_at).getTime()}` : null
+      avatarUrl: meta.has_avatar ? `/api/auth/avatar?v=${new Date(meta.avatar_updated_at).getTime()}` : null,
+      theme: meta.theme === 'dark' ? 'dark' : 'light'
     },
     home: homeFor(user)
   });
@@ -110,7 +111,7 @@ export async function currentSession({ db, req, res }) {
 /** Server-side entry redirect for `/`. @type {import('../router.js').Handler} */
 export async function entry({ db, req, res }) {
   const session = await validateSessionToken(db, readSessionCookie(req)).catch(() => null);
-  redirect(res, session ? homeFor(session.user) : '/login');
+  redirect(res, session ? homeFor(session.user) : '/auth/login');
 }
 
 /** @type {import('../router.js').Handler} */
@@ -145,6 +146,18 @@ export async function changePassword({ db, req, res }) {
   });
 
   sendJson(res, 200, { ok: true, redirectTo: homeFor({ role: session.user.role, mustChangePassword: false }) });
+}
+
+/** Saves the signed-in account's light or dark preference. @type {import('../router.js').Handler} */
+export async function updateTheme({ db, req, res }) {
+  const session = await requireSession(db, req);
+  const body = await readJson(req);
+  const theme = body.theme;
+  if (theme !== 'light' && theme !== 'dark') {
+    throw new HttpError(422, 'Choose light or dark.', { code: 'VALIDATION', fields: { theme: 'Choose light or dark.' } });
+  }
+  await db.query('update app.users set theme = $2 where id = $1', [session.user.id, theme]);
+  sendJson(res, 200, { theme });
 }
 
 const FORGOT_RESPONSE = {
@@ -220,5 +233,5 @@ export async function setPasswordWithToken({ db, req, res }) {
     });
   });
 
-  sendJson(res, 200, { ok: true, redirectTo: '/login' });
+  sendJson(res, 200, { ok: true, redirectTo: '/auth/login' });
 }

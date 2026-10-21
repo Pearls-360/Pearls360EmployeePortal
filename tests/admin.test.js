@@ -27,7 +27,7 @@ describe('creating employees', () => {
     assert.equal(employee.hasPassword, false);
     assert.equal(accessLink.emailed, false);
     assert.equal(accessLink.purpose, 'activation');
-    assert.match(accessLink.url, /\/set-password#token=[A-Za-z0-9_-]{43}$/);
+    assert.match(accessLink.url, /\/auth\/set-password#token=[A-Za-z0-9_-]{43}$/);
 
     const token = tokenFromUrl(accessLink.url);
     const stored = await db.query('select token_hash from app.password_reset_tokens where user_id = $1', [employee.id]);
@@ -249,7 +249,7 @@ describe('directory, details, edits and audit', () => {
     assert.equal(created.body.admin.displayName, 'Second Admin');
     assert.equal(created.body.admin.accountStatus, 'pending');
     assert.equal(created.body.accessLink.purpose, 'activation');
-    assert.match(created.body.accessLink.url, /\/set-password#token=/);
+    assert.match(created.body.accessLink.url, /\/auth\/set-password#token=/);
 
     const row = await db.query("select role, status, display_name from app.users where id = $1", [created.body.admin.id]);
     assert.equal(row.rows[0].role, 'admin');

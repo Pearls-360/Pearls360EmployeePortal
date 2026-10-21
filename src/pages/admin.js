@@ -18,6 +18,8 @@ async function load() {
   try {
     const data = await api('/admin/overview');
     $('[data-stat="total"]').textContent = String(data.total);
+    $('[data-stat="invoices"]').textContent = String(data.invoices);
+    $('[data-stat="resources"]').textContent = String(data.documents);
   } catch (error) {
     showAlert(pageAlert, /** @type {Error} */ (error).message);
   } finally {

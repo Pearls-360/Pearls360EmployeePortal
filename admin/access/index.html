@@ -11,9 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
   <script src="/boot.js"></script>
-  <script type="module" src="/src/pages/placeholder.js"></script>
+  <script type="module" src="/src/pages/admin-access.js"></script>
 </head>
-<body data-auth="pending" data-role="admin" data-nav="access" data-title="Access Control">
+<body data-auth="pending">
 <div class="app" data-shell>
   <aside class="sidebar" data-sidebar></aside>
   <div class="sidebar-backdrop" data-sidebar-backdrop hidden></div>
@@ -22,9 +22,13 @@
     <main class="app-content" id="main">
       <section class="dash-intro">
         <h1>Access Control</h1>
-        <p>Who can see leadership materials and other restricted resources.</p>
+        <p>Leadership access is stored per employee and checked before a restricted document opens.</p>
       </section>
-      <section class="panel"><p class="empty">Access rules are not set up yet. Permissions will be enforced on the server before any restricted document is shown.</p></section>
+      <div class="form__alert" data-page-alert role="alert" hidden><span data-alert-text></span></div>
+      <section class="panel">
+        <ul class="record-list" data-rows></ul>
+        <p class="empty" data-empty hidden>No employees yet.</p>
+      </section>
     </main>
   </div>
 </div>

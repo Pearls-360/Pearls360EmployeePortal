@@ -5,6 +5,9 @@ import * as auth from './routes/auth.js';
 import * as admin from './routes/admin.js';
 import * as employee from './routes/employee.js';
 import * as profile from './routes/profile.js';
+import * as documents from './routes/documents.js';
+import * as invoices from './routes/invoices.js';
+import * as access from './routes/access.js';
 
 /**
  * @typedef {{
@@ -24,6 +27,7 @@ const ROUTES = [
   ['POST', '/auth/logout', auth.logout],
   ['GET', '/auth/session', auth.currentSession],
   ['POST', '/auth/change-password', auth.changePassword],
+  ['PATCH', '/auth/theme', auth.updateTheme],
   ['POST', '/auth/forgot-password', auth.forgotPassword],
   ['POST', '/auth/token-info', auth.accessTokenInfo],
   ['POST', '/auth/set-password', auth.setPasswordWithToken],
@@ -43,8 +47,19 @@ const ROUTES = [
   ['POST', '/admin/admins/:id/status', admin.setAdminStatus],
   ['POST', '/admin/admins/:id/access-link', admin.issueAdminAccessLink],
   ['GET', '/admin/audit-logs', admin.auditLogs],
+  ['GET', '/admin/documents', documents.listAdminDocuments],
+  ['POST', '/admin/documents', documents.createDocument],
+  ['DELETE', '/admin/documents/:id', documents.deleteDocument],
+  ['GET', '/documents/:id/file', documents.downloadDocument],
+  ['GET', '/admin/invoices', invoices.listInvoices],
+  ['POST', '/admin/invoices', invoices.createInvoice],
+  ['POST', '/admin/invoices/:id/status', invoices.setInvoiceStatus],
+  ['GET', '/admin/access', access.listAccess],
+  ['POST', '/admin/access', access.setAccess],
 
   ['GET', '/employee/profile', employee.getProfile],
+  ['GET', '/employee/documents', documents.listOwnDocuments],
+  ['GET', '/employee/invoices', invoices.listOwnInvoices],
   ['PATCH', '/employee/profile', employee.updateProfile]
 ];
 
@@ -95,7 +110,7 @@ export async function handleApi(req, res) {
     if (res.headersSent) return;
     if (path === '/entry' && method === 'GET') {
       if (!(err instanceof HttpError)) console.error('[api] entry redirect failed', err);
-      redirect(res, '/login');
+      redirect(res, '/auth/login');
       return;
     }
     if (err instanceof HttpError) {

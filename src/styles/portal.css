@@ -10,6 +10,17 @@
   grid-template-columns: minmax(0, 1.05fr) minmax(min(100%, 480px), .95fr);
   min-height: 100vh;
   min-height: 100dvh;
+  /* Login stays the original light panel even when the app theme is dark. */
+  --white: #fff;
+  --black: #000;
+  --light: #fff;
+  --surface: #fff;
+  --ink: #000;
+  --ink-soft: rgba(0, 0, 0, .92);
+  --ink-muted: rgba(0, 0, 0, .7);
+  --rule: rgba(0, 0, 0, .14);
+  color: #000;
+  color-scheme: light;
 }
 @media (min-width: 901px) {
   /* Photo stays fixed; only the form panel scrolls if the window is very short */
@@ -31,9 +42,11 @@
 .auth__panel {
   display: flex;
   flex-direction: column;
-  background: var(--light);
+  background: #fff;
+  color: #000;
   padding: clamp(1.75rem, 4vw, 3rem) var(--gutter);
 }
+.auth .brand__mark { filter: none; mix-blend-mode: multiply; }
 @media (min-width: 901px) {
   .auth__panel { padding-left: clamp(2.5rem, 5vw, 5.5rem); padding-right: clamp(2.5rem, 5vw, 5.5rem); }
 }

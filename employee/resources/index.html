@@ -11,9 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
   <script src="/boot.js"></script>
-  <script type="module" src="/src/pages/placeholder.js"></script>
+  <script type="module" src="/src/pages/employee-records.js"></script>
 </head>
-<body data-auth="pending" data-role="employee" data-nav="my-resources" data-title="My Resources">
+<body data-auth="pending" data-records="documents">
 <div class="app" data-shell>
   <aside class="sidebar" data-sidebar></aside>
   <div class="sidebar-backdrop" data-sidebar-backdrop hidden></div>
@@ -22,9 +22,13 @@
     <main class="app-content" id="main">
       <section class="dash-intro">
         <h1>My Resources</h1>
-        <p>Documents and training you are allowed to open.</p>
+        <p>Documents you are allowed to open.</p>
       </section>
-      <section class="panel"><div class="panel__head"><h2 class="panel__title">Training &amp; Assessments</h2></div><p class="empty">Nothing is assigned to you yet. Published assessments will appear in this section, with a two-attempt limit enforced on the server.</p></section>
+      <div class="form__alert" data-page-alert role="alert" hidden><span data-alert-text></span></div>
+      <section class="panel">
+        <ul class="record-list" data-rows></ul>
+        <p class="empty" data-empty hidden>Nothing has been published for you yet.</p>
+      </section>
     </main>
   </div>
 </div>

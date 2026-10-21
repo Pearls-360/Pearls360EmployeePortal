@@ -11,9 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
   <script src="/boot.js"></script>
-  <script type="module" src="/src/pages/placeholder.js"></script>
+  <script type="module" src="/src/pages/admin-invoices.js"></script>
 </head>
-<body data-auth="pending" data-role="admin" data-nav="invoices" data-title="Employee Invoices">
+<body data-auth="pending">
 <div class="app" data-shell>
   <aside class="sidebar" data-sidebar></aside>
   <div class="sidebar-backdrop" data-sidebar-backdrop hidden></div>
@@ -22,9 +22,74 @@
     <main class="app-content" id="main">
       <section class="dash-intro">
         <h1>Employee Invoices</h1>
-        <p>Submitted, approved and paid employee invoices.</p>
+        <p>Each amount stays in its own currency.</p>
       </section>
-      <section class="panel"><p class="empty">Invoices are not set up yet. Drafts, payments and currency totals will appear here when the module is available. Amounts will stay separated by currency.</p></section>
+      <div class="form__alert" data-page-alert role="alert" hidden><span data-alert-text></span></div>
+      <section class="panel">
+        <h2 class="panel__title">New invoice</h2>
+        <form class="form" id="invoice-form" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label for="employeeId">Employee</label>
+              <div class="field__control"><select id="employeeId" name="employeeId" required></select></div>
+            </div>
+            <div class="field">
+              <label for="invoiceNumber">Invoice number</label>
+              <div class="field__control"><input id="invoiceNumber" name="invoiceNumber" maxlength="32" required></div>
+            </div>
+            <div class="field full">
+              <label for="description">Description</label>
+              <div class="field__control"><input id="description" name="description" maxlength="240" required></div>
+            </div>
+            <div class="field">
+              <label for="amount">Amount</label>
+              <div class="field__control"><input id="amount" name="amount" inputmode="decimal" required></div>
+            </div>
+            <div class="field">
+              <label for="currency">Currency</label>
+              <div class="field__control"><input id="currency" name="currency" maxlength="3" value="USD" required></div>
+            </div>
+            <div class="field">
+              <label for="issuedOn">Issued</label>
+              <div class="field__control"><input id="issuedOn" name="issuedOn" type="date" required></div>
+            </div>
+            <div class="field">
+              <label for="dueOn">Due</label>
+              <div class="field__control"><input id="dueOn" name="dueOn" type="date"></div>
+            </div>
+            <div class="field">
+              <label for="status">Status</label>
+              <div class="field__control">
+                <select id="status" name="status">
+                  <option value="draft">Draft</option>
+                  <option value="open" selected>Open</option>
+                  <option value="paid">Paid</option>
+                  <option value="void">Void</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button class="btn" type="submit" data-save>Save invoice</button>
+        </form>
+      </section>
+      <section class="panel">
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Number</th>
+                <th>Employee</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Issued</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody data-rows></tbody>
+          </table>
+        </div>
+        <p class="empty" data-empty hidden>No invoices yet.</p>
+      </section>
     </main>
   </div>
 </div>

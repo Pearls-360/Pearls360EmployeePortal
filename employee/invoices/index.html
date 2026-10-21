@@ -11,9 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
   <script src="/boot.js"></script>
-  <script type="module" src="/src/pages/placeholder.js"></script>
+  <script type="module" src="/src/pages/employee-records.js"></script>
 </head>
-<body data-auth="pending" data-role="employee" data-nav="my-invoices" data-title="My Invoices">
+<body data-auth="pending" data-records="invoices">
 <div class="app" data-shell>
   <aside class="sidebar" data-sidebar></aside>
   <div class="sidebar-backdrop" data-sidebar-backdrop hidden></div>
@@ -24,7 +24,11 @@
         <h1>My Invoices</h1>
         <p>Only invoices that belong to you.</p>
       </section>
-      <section class="panel"><p class="empty">You have no invoices yet.</p></section>
+      <div class="form__alert" data-page-alert role="alert" hidden><span data-alert-text></span></div>
+      <section class="panel">
+        <ul class="record-list" data-rows></ul>
+        <p class="empty" data-empty hidden>You have no invoices yet.</p>
+      </section>
     </main>
   </div>
 </div>

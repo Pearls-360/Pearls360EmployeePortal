@@ -82,7 +82,7 @@ const db = createPgDatabase(config.migrationDatabaseUrl, { max: 1 });
 try {
   const admin = await createAdmin(db, { email, password, allowAdditional, forcePasswordChange });
   console.log(`Admin created: ${admin.email}`);
-  console.log(forcePasswordChange ? 'Sign in at /login — you will be asked to choose a new password.' : 'Sign in at /login.');
+  console.log(forcePasswordChange ? 'Sign in at /auth/login — you will be asked to choose a new password.' : 'Sign in at /auth/login.');
 } catch (err) {
   if (err instanceof BootstrapError) console.error(err.message);
   else console.error('Failed to create admin:', /** @type {Error} */ (err).message);

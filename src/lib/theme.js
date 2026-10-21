@@ -1,32 +1,16 @@
-const THEME_KEY = 'p360-theme';
+import { api } from './api.js';
 
 /** @returns {'light' | 'dark'} */
 export function getTheme() {
-  const stored = localStorage.getItem(THEME_KEY);
-  if (stored === 'dark' || stored === 'light') return stored;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
 }
 
 /** @param {'light' | 'dark'} theme */
-export function setTheme(theme) {
-  localStorage.setItem(THEME_KEY, theme);
-  document.documentElement.dataset.theme = theme;
+export function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme === 'dark' ? 'dark' : 'light';
 }
 
-/** Apply saved theme before paint when possible. */
-export function applyStoredTheme() {
-  const stored = localStorage.getItem(THEME_KEY);
-  if (stored === 'dark' || stored === 'light') document.documentElement.dataset.theme = stored;
-  else document.documentElement.dataset.theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
-
-export function toggleTheme() {
-  const next = getTheme() === 'dark' ? 'light' : 'dark';
-  setTheme(next);
-  return next;
-}
-
-/** Wire the Settings switch. On is dark, off is light. */
+/** Wire the Settings switch. On is dark, off is light. The choice is saved on the account. */
 export function bindThemePicker(root = document) {
   const input = root.querySelector('[data-theme-toggle]');
   const label = root.querySelector('[data-theme-label]');
@@ -37,9 +21,20 @@ export function bindThemePicker(root = document) {
     input.setAttribute('aria-checked', dark ? 'true' : 'false');
     if (label) label.textContent = dark ? 'Dark' : 'Light';
   };
-  input.addEventListener('change', () => {
-    setTheme(input.checked ? 'dark' : 'light');
+  input.addEventListener('change', async () => {
+    const next = input.checked ? 'dark' : 'light';
+    const previous = getTheme();
+    applyTheme(next);
     sync();
+    input.disabled = true;
+    try {
+      await api('/auth/theme', { method: 'PATCH', body: { theme: next } });
+    } catch {
+      applyTheme(previous);
+      sync();
+    } finally {
+      input.disabled = false;
+    }
   });
   sync();
 }

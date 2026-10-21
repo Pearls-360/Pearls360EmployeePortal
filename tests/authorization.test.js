@@ -32,13 +32,28 @@ const ADMIN_ENDPOINTS = (id) => [
   ['POST', '/admin/admins', {}],
   ['POST', `/admin/admins/${id}/status`, { status: 'inactive' }],
   ['POST', `/admin/admins/${id}/access-link`, {}],
-  ['GET', '/admin/audit-logs']
+  ['GET', '/admin/audit-logs'],
+  ['GET', '/admin/documents?kind=library'],
+  ['POST', '/admin/documents', {}],
+  ['GET', '/admin/invoices'],
+  ['POST', '/admin/invoices', {}],
+  ['GET', '/admin/access'],
+  ['POST', '/admin/access', {}]
 ];
 
 describe('unauthenticated access', () => {
   test('every protected endpoint returns 401', async () => {
     /** @type {Array<[string, string, any?]>} */
-    const endpoints = [...ADMIN_ENDPOINTS(alice.employee.id), ['GET', '/employee/profile'], ['PATCH', '/employee/profile', { phone: '' }], ['GET', '/auth/session'], ['POST', '/auth/change-password', {}]];
+    const endpoints = [
+      ...ADMIN_ENDPOINTS(alice.employee.id),
+      ['GET', '/employee/profile'],
+      ['PATCH', '/employee/profile', { phone: '' }],
+      ['GET', '/employee/documents'],
+      ['GET', '/employee/invoices'],
+      ['GET', '/documents/00000000-0000-4000-8000-000000000001/file'],
+      ['GET', '/auth/session'],
+      ['POST', '/auth/change-password', {}]
+    ];
     for (const [method, path, body] of endpoints) {
       const r = await call({ method, path, body });
       assert.equal(r.status, 401, `${method} ${path}`);

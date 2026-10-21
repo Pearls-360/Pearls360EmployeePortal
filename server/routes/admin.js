@@ -93,9 +93,15 @@ export async function overview({ db, req, res }) {
       order by a.created_at desc, a.id desc
       limit 8`
   );
+  const { rows: extras } = await db.query(
+    `select (select count(*)::int from app.documents) as documents,
+            (select count(*)::int from app.invoices) as invoices`
+  );
   const c = counts[0];
   sendJson(res, 200, {
     total: c.total,
+    documents: extras[0].documents,
+    invoices: extras[0].invoices,
     active: c.active,
     inactive: c.inactive,
     pending: c.pending,

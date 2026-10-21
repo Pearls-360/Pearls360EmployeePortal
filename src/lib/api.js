@@ -39,9 +39,9 @@ export async function api(path, { method = 'GET', body, redirectOnAuthError = tr
     const err = data?.error || {};
     const error = new ApiError(response.status, err.message || 'Something went wrong. Please try again.', err.code, err.fields);
     if (redirectOnAuthError && error.code === 'UNAUTHENTICATED') {
-      window.location.replace('/login');
+      window.location.replace('/auth/login');
     } else if (redirectOnAuthError && error.code === 'PASSWORD_CHANGE_REQUIRED') {
-      window.location.replace('/change-password');
+      window.location.replace('/auth/change-password');
     }
     throw error;
   }

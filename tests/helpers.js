@@ -82,10 +82,13 @@ export async function call({ method = 'GET', path, body, cookie, headers = {}, i
   const payload = await done;
   const setCookies = [].concat(resHeaders['set-cookie'] || []);
   const sessionCookie = setCookies.find((c) => c.startsWith(`${COOKIE}=`));
+  const type = String(resHeaders['content-type'] || '');
+  const text = payload == null ? '' : Buffer.isBuffer(payload) ? payload.toString() : String(payload);
   return {
     status: res.statusCode,
     headers: resHeaders,
-    body: payload ? JSON.parse(payload) : null,
+    raw: payload,
+    body: payload && type.includes('json') ? JSON.parse(text) : null,
     setCookies,
     /** Token from Set-Cookie: string when set, '' when cleared, undefined when untouched. */
     sessionToken: sessionCookie ? decodeURIComponent(sessionCookie.split(';')[0].slice(COOKIE.length + 1)) : undefined

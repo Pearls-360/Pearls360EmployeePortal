@@ -5,7 +5,7 @@ import { defineConfig, loadEnv } from 'vite';
 const root = fileURLToPath(new URL('.', import.meta.url));
 
 export const PAGES = [
-  'login',
+  'auth/login',
   'admin',
   'admin/admins',
   'admin/employees',
@@ -21,10 +21,18 @@ export const PAGES = [
   'employee/invoices',
   'employee/profile',
   'employee/settings',
-  'set-password',
-  'forgot-password',
-  'change-password'
+  'auth/set-password',
+  'auth/forgot-password',
+  'auth/change-password'
 ];
+
+/** Older public paths kept so existing links still open. */
+const PAGE_ALIASES = {
+  login: 'auth/login',
+  'set-password': 'auth/set-password',
+  'forgot-password': 'auth/forgot-password',
+  'change-password': 'auth/change-password'
+};
 
 /**
  * Serves the same API router used by the Vercel Function, plus clean page URLs,
@@ -44,7 +52,8 @@ function portalServer() {
         return;
       }
       const page = pathname.replace(/^\/|\/$/g, '');
-      if (PAGES.includes(page)) req.url = `/${page}/index.html`;
+      const file = PAGES.includes(page) ? page : PAGE_ALIASES[page];
+      if (file) req.url = `/${file}/index.html`;
       next();
     });
   }

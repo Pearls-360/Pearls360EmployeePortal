@@ -22,7 +22,7 @@ describe('first admin sign-in', () => {
     admin = new Agent();
     const login = await admin.login(ADMIN_EMAIL, ADMIN_TEMP_PASSWORD);
     assert.equal(login.status, 200);
-    assert.equal(login.body.redirectTo, '/change-password');
+    assert.equal(login.body.redirectTo, '/auth/change-password');
     assert.equal(login.body.user.mustChangePassword, true);
 
     const blocked = await admin.get('/admin/overview');
@@ -31,7 +31,7 @@ describe('first admin sign-in', () => {
 
     const session = await admin.get('/auth/session');
     assert.equal(session.status, 200);
-    assert.equal(session.body.home, '/change-password');
+    assert.equal(session.body.home, '/auth/change-password');
   });
 
   test('rejects a weak or reused new password', async () => {
@@ -157,7 +157,7 @@ describe('sessions', () => {
   test('/ redirects according to the session', async () => {
     const anon = await call({ path: '/entry' });
     assert.equal(anon.status, 302);
-    assert.equal(anon.headers.location, '/login');
+    assert.equal(anon.headers.location, '/auth/login');
 
     const signedIn = await admin.get('/entry');
     assert.equal(signedIn.headers.location, '/admin');
@@ -207,6 +207,25 @@ describe('CSRF and request hardening', () => {
   test('responses are never cached', async () => {
     const r = await admin.get('/auth/session');
     assert.equal(r.headers['cache-control'], 'no-store');
+  });
+});
+
+describe('appearance', () => {
+  test('the theme is stored on the account and does not follow another user', async () => {
+    const session = await admin.get('/auth/session');
+    assert.equal(session.body.user.theme, 'light');
+
+    const saved = await admin.patch('/auth/theme', { theme: 'dark' });
+    assert.equal(saved.status, 200);
+    assert.equal(saved.body.theme, 'dark');
+    assert.equal((await admin.get('/auth/session')).body.user.theme, 'dark');
+
+    const invalid = await admin.patch('/auth/theme', { theme: 'blue' });
+    assert.equal(invalid.status, 422);
+
+    const employee = await createActiveEmployee(admin);
+    assert.equal((await employee.agent.get('/auth/session')).body.user.theme, 'light');
+    await admin.patch('/auth/theme', { theme: 'light' });
   });
 });
 

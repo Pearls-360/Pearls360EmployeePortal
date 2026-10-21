@@ -23,6 +23,27 @@ async function init() {
     $('[data-field="department"]').textContent = profile.department;
     $('[data-field="designation"]').textContent = profile.designation;
     $('[data-field="joiningDate"]').textContent = formatDate(profile.joiningDate);
+    const [{ documents }, { invoices }] = await Promise.all([
+      api('/employee/documents'),
+      api('/employee/invoices')
+    ]);
+    const resourceList = /** @type {HTMLElement} */ ($('[data-resource-list]'));
+    const invoiceList = /** @type {HTMLElement} */ ($('[data-invoice-list]'));
+    resourceList.replaceChildren(...documents.slice(0, 4).map((doc) => {
+      const li = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = `/api/documents/${doc.id}/file`;
+      link.textContent = doc.title;
+      li.append(link);
+      return li;
+    }));
+    invoiceList.replaceChildren(...invoices.slice(0, 4).map((invoice) => {
+      const li = document.createElement('li');
+      li.textContent = `${invoice.invoiceNumber} · ${invoice.currency} ${invoice.amount}`;
+      return li;
+    }));
+    /** @type {HTMLElement} */ ($('[data-resource-empty]')).hidden = documents.length > 0;
+    /** @type {HTMLElement} */ ($('[data-invoice-empty]')).hidden = invoices.length > 0;
   } catch (error) {
     showAlert($('[data-page-alert]'), /** @type {Error} */ (error).message);
   }

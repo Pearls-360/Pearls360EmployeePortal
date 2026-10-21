@@ -28,7 +28,7 @@ export async function issueAccessToken(db, { userId, purpose, ttlMs, createdBy =
 
 /** The token goes in the URL fragment so it never reaches server logs or Referer headers. */
 export function accessTokenUrl(token) {
-  return `${config.appOrigin}/set-password#token=${token}`;
+  return `${config.appOrigin}/auth/set-password#token=${token}`;
 }
 
 /**
