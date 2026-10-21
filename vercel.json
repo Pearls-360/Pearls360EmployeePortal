@@ -1,0 +1,6 @@
+{
+  "functions": {
+    "api/inquiry.js": { "maxDuration": 30 },
+    "api/career.js": { "maxDuration": 30 }
+  }
+}
