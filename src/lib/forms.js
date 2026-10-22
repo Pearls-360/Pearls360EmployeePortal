@@ -58,22 +58,85 @@ export function applyFieldErrors(form, fields) {
   return true;
 }
 
+/** @type {WeakMap<HTMLElement, ReturnType<typeof setTimeout>>} */
+const alertTimers = new WeakMap();
+
 /**
  * @param {HTMLElement} box  `.form__alert` element containing `[data-alert-text]`
  * @param {string} message
  * @param {'error' | 'info' | 'success'} [tone]
+ * @param {{ persist?: boolean }} [opts]  Keep a success message on screen, such as the reset-email confirmation.
  */
-export function showAlert(box, message, tone = 'error') {
+export function showAlert(box, message, tone = 'error', { persist = false } = {}) {
   const text = box.querySelector('[data-alert-text]') || box;
   text.textContent = message;
   box.classList.toggle('form__alert--info', tone === 'info');
   box.classList.toggle('form__alert--success', tone === 'success');
+  const toast = (tone === 'success' || tone === 'info') && !persist;
+  box.classList.toggle('form__alert--toast', toast);
   box.setAttribute('role', tone === 'error' ? 'alert' : 'status');
   box.hidden = false;
+  const previous = alertTimers.get(box);
+  if (previous) clearTimeout(previous);
+  if (toast) alertTimers.set(box, setTimeout(() => hideAlert(box), 4000));
+  else alertTimers.delete(box);
+}
+
+/**
+ * In-app confirmation. Replaces the browser confirm box.
+ * @param {{ title: string, message: string, confirmLabel: string, cancelLabel?: string, danger?: boolean }} opts
+ * @returns {Promise<boolean>}
+ */
+export function confirmAction({ title, message, confirmLabel, cancelLabel = 'Cancel', danger = false }) {
+  return new Promise((resolve) => {
+    const dialog = document.createElement('dialog');
+    dialog.className = 'confirm';
+    const heading = document.createElement('h2');
+    heading.textContent = title;
+    const copy = document.createElement('p');
+    copy.textContent = message;
+    const actions = document.createElement('div');
+    actions.className = 'confirm__actions';
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'btn btn--ghost';
+    cancel.textContent = cancelLabel;
+    const ok = document.createElement('button');
+    ok.type = 'button';
+    ok.className = danger ? 'btn btn--danger' : 'btn';
+    ok.textContent = confirmLabel;
+    actions.append(cancel, ok);
+    dialog.append(heading, copy, actions);
+
+    let settled = false;
+    const finish = (value) => {
+      if (settled) return;
+      settled = true;
+      dialog.close();
+      dialog.remove();
+      resolve(value);
+    };
+    cancel.addEventListener('click', () => finish(false));
+    ok.addEventListener('click', () => finish(true));
+    dialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      finish(false);
+    });
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) finish(false);
+    });
+    document.body.append(dialog);
+    dialog.showModal();
+    cancel.focus();
+  });
 }
 
 /** @param {HTMLElement} box */
 export function hideAlert(box) {
+  const previous = alertTimers.get(box);
+  if (previous) clearTimeout(previous);
+  alertTimers.delete(box);
+  box.classList.remove('form__alert--toast');
   box.hidden = true;
 }
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Team Resources | Pearls360 Employee Portal</title>
+  <title>Training Resources | Pearls360 Employee Portal</title>
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#f1f1ef">
   <link rel="icon" type="image/png" href="/logo.png">
@@ -26,20 +26,33 @@
           <p data-doc-count></p>
         </div>
         <div class="page-toolbar__actions">
-          <button class="btn" type="button" data-add-document>Upload resource</button>
+          <button class="btn btn--ghost" type="button" data-create-quiz>Create Quiz</button>
+          <button class="btn" type="button" data-add-document>Upload training</button>
         </div>
       </div>
       <div class="form__alert" data-page-alert role="alert" hidden><span data-alert-text></span></div>
+      <div class="panel-grid panel-grid--equal">
       <section class="panel" aria-labelledby="documents-title">
         <div class="panel__head">
           <div>
-            <h2 class="panel__title" id="documents-title">Team Resources</h2>
-            <p>Training and shared files stored in the database.</p>
+            <h2 class="panel__title" id="documents-title">Training Resources</h2>
+            <p>Training shared with employees.</p>
           </div>
         </div>
         <ul class="record-list" data-rows></ul>
-        <p class="empty" data-empty hidden>No resources yet.</p>
+        <p class="empty" data-empty hidden>No training yet.</p>
       </section>
+      <section class="panel" aria-labelledby="quizzes-title">
+        <div class="panel__head">
+          <div>
+            <h2 class="panel__title" id="quizzes-title">Quizzes</h2>
+            <p>Who they are assigned to, and whether they are done.</p>
+          </div>
+        </div>
+        <div data-quizzes></div>
+        <p class="empty" data-quizzes-empty>No quizzes yet.</p>
+      </section>
+      </div>
     </main>
   </div>
 </div>
@@ -48,8 +61,8 @@
   <div class="drawer__inner">
     <div class="drawer__head">
       <div>
-        <span class="eyebrow eyebrow--plain">Resources</span>
-        <h2 class="drawer__title" id="upload-dialog-title">Upload resource</h2>
+        <span class="eyebrow eyebrow--plain">Training</span>
+        <h2 class="drawer__title" id="upload-dialog-title">Upload training</h2>
       </div>
       <button class="drawer__close" type="button" data-upload-close aria-label="Close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
@@ -82,7 +95,67 @@
             <p class="field__hint">Any file, up to 2 MB. Employees can open it only while signed in.</p>
           </div>
         </div>
-        <button class="btn" type="submit" data-save>Save resource</button>
+        <button class="btn" type="submit" data-save>Save training</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="drawer" id="quiz-dialog" aria-labelledby="quiz-dialog-title">
+  <div class="drawer__inner">
+    <div class="drawer__head">
+      <div>
+        <span class="eyebrow eyebrow--plain">Training</span>
+        <h2 class="drawer__title" id="quiz-dialog-title">Create Quiz</h2>
+      </div>
+      <button class="drawer__close" type="button" data-quiz-close aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="drawer__body">
+      <form class="form" id="quiz-form" novalidate>
+        <div class="form__alert" data-quiz-alert role="alert" hidden><span data-alert-text></span></div>
+        <div class="field">
+          <label for="quiz-title">Title</label>
+          <div class="field__control"><input id="quiz-title" name="title" maxlength="160" required></div>
+        </div>
+        <div data-question-list></div>
+        <button class="btn btn--ghost" type="button" data-add-question>Add question</button>
+        <div class="field">
+          <label for="quiz-employee">Assign to</label>
+          <div class="field__control">
+            <select id="quiz-employee" required>
+              <option value="">Select an employee</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" type="submit" data-save-quiz>Save quiz</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="drawer" id="review-dialog" aria-labelledby="review-dialog-title">
+  <div class="drawer__inner">
+    <div class="drawer__head">
+      <div>
+        <span class="eyebrow eyebrow--plain">Quiz</span>
+        <h2 class="drawer__title" id="review-dialog-title">Review</h2>
+      </div>
+      <button class="drawer__close" type="button" data-review-close aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="drawer__body">
+      <div data-review></div>
+      <form class="form" id="score-form" hidden>
+        <div class="form__alert" data-score-alert role="alert" hidden><span data-alert-text></span></div>
+        <div class="field">
+          <label for="score">Score</label>
+          <div class="field__control"><input id="score" name="score" inputmode="decimal" required></div>
+          <p class="field__hint">A number from 0 to 1000. The employee will see it in Training.</p>
+        </div>
+        <button class="btn" type="submit">Save score</button>
       </form>
     </div>
   </div>

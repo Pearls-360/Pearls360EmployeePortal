@@ -3,7 +3,7 @@ import '../styles/portal.css';
 import '../styles/dashboard.css';
 import '../styles/shell.css';
 import { api } from '../lib/api.js';
-import { EMAIL_PATTERN, applyFieldErrors, clearErrorsOnInput, clearFieldErrors, formValues, hideAlert, setBusy, setFieldError, showAlert } from '../lib/forms.js';
+import { EMAIL_PATTERN, applyFieldErrors, clearErrorsOnInput, clearFieldErrors, confirmAction, formValues, hideAlert, setBusy, setFieldError, showAlert } from '../lib/forms.js';
 import { ACCOUNT_STATUS_LABELS, auditLabel, formatDateTime } from '../lib/format.js';
 import { mountShell } from '../lib/shell.js';
 import { requirePage, revealPage } from '../lib/session.js';
@@ -304,12 +304,19 @@ toggleStatusButton.addEventListener('click', async () => {
 deleteButton.addEventListener('click', async () => {
   if (!current) return;
   const name = `${current.firstName} ${current.lastName}`;
-  if (!window.confirm(`Delete ${name}'s account? This cannot be undone.`)) return;
+  const confirmed = await confirmAction({
+    title: 'Move this account to Soft Delete?',
+    message: `${name} and their invoices will leave the directory. You can restore them together from Soft Delete for at least 30 days.`,
+    confirmLabel: 'Move to Soft Delete',
+    cancelLabel: 'Keep account',
+    danger: true
+  });
+  if (!confirmed) return;
   setBusy(deleteButton, true, 'Deleting…');
   try {
     await api(`/admin/employees/${current.id}`, { method: 'DELETE' });
     dialog.close();
-    showAlert(directoryAlert, 'Account deleted.', 'success');
+    showAlert(directoryAlert, 'Moved to Soft Delete.', 'success');
     refreshAll();
   } catch (error) {
     setBusy(deleteButton, false);

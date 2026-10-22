@@ -106,7 +106,7 @@
 .auth__back { justify-self: center; font-size: var(--text-sm); color: var(--ink-muted); }
 .auth__row { display: flex; justify-content: space-between; gap: 1rem; font-size: var(--text-sm); color: var(--ink-muted); }
 .auth__row [hidden] + .link { margin-left: auto; }
-.field__link { display: inline-block; margin-top: .7rem; font-size: .8rem; color: var(--ink-muted); text-decoration: underline; text-underline-offset: 3px; transition: color .3s ease; }
+.field__link { display: inline-block; margin-top: .7rem; font-size: .8rem; color: var(--ink-muted); text-decoration: none; transition: color .3s ease; }
 .field__link:hover { color: var(--black); }
 
 /* Hold protected content until the session has been verified */

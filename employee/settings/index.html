@@ -23,10 +23,11 @@
       <section class="dash-intro">
         <span class="eyebrow">Account</span>
         <h1>Settings</h1>
-        <p>Appearance and session for your account.</p>
+        <p>Appearance, clock, and session for your account.</p>
       </section>
 
-      <div class="panel-grid">
+      <div class="form__alert" data-page-alert role="alert" hidden><span data-alert-text></span></div>
+      <div class="panel-grid panel-grid--3">
         <section class="panel" aria-labelledby="appearance-title">
           <div class="panel__head">
             <div>
@@ -39,6 +40,18 @@
             <span class="theme-toggle__track" aria-hidden="true"><span class="theme-toggle__thumb"></span></span>
             <span class="theme-toggle__label" data-theme-label>Light</span>
           </label>
+        </section>
+        <section class="panel" aria-labelledby="clock-title">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title" id="clock-title">Clock</h2>
+              <p>The top bar shows this region in digits.</p>
+            </div>
+          </div>
+          <div class="field">
+            <label for="timezone">Region</label>
+            <div class="field__control"><select id="timezone" data-timezone></select></div>
+          </div>
         </section>
         <section class="panel">
           <div class="panel__head">

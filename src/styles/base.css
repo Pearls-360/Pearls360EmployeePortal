@@ -248,6 +248,9 @@ strong, b { font-weight: 700; }
 }
 .btn:hover { color: var(--black); }
 .btn:hover::before { transform: translateY(0); }
+.btn--danger { background: var(--error); border-color: var(--error); color: #fff; }
+.btn--danger::before { background: #fff; }
+.btn--danger:hover { color: var(--error); }
 .btn--ghost { background: transparent; color: var(--black); }
 .btn--ghost::before { background: var(--black); }
 .btn--ghost:hover { color: var(--white); }
@@ -341,8 +344,31 @@ strong, b { font-weight: 700; }
 .form__alert[hidden] { display: none; }
 .form__alert:focus { outline: none; }
 .form__alert--success { border-color: rgba(31,111,67,.35); border-left-color: #1f6f43; background: rgba(31,111,67,.05); color: #1f6f43; }
+.form__alert--toast {
+  position: fixed; z-index: 40; top: 1.25rem; left: 50%;
+  width: min(420px, calc(100vw - 2rem));
+  transform: translateX(-50%);
+  box-shadow: 0 10px 30px var(--shadow);
+  animation: toast-in .35s var(--ease-out);
+}
+@keyframes toast-in { from { opacity: 0; transform: translateX(-50%) translateY(-8px); } }
 .form__alert--info { border-color: var(--rule); border-left-color: var(--black); background: var(--white); color: var(--ink-soft); }
 .form__alert svg { width: 16px; height: 16px; flex: none; margin-top: .15em; }
+
+.confirm {
+  width: min(440px, calc(100vw - 2rem));
+  margin: auto;
+  padding: 1.7rem 1.6rem 1.4rem;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  color: var(--black);
+  box-shadow: 0 18px 50px var(--shadow);
+}
+.confirm::backdrop { background: rgba(10, 8, 12, .5); }
+.confirm h2 { font-family: var(--font-heading); font-size: 1.7rem; font-weight: 400; letter-spacing: var(--heading-ls); margin: 0 0 .55rem; }
+.confirm p { margin: 0; color: var(--ink-soft); line-height: 1.5; }
+.confirm__actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: .7rem; margin-top: 1.5rem; }
+.confirm .btn { min-height: 2.7rem; padding: .6rem 1.15rem; }
 
 /* --------------------------------------------------------------------------
    Utilities

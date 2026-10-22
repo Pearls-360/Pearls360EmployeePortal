@@ -3,7 +3,7 @@ import { applyTheme } from './theme.js';
 
 /**
  * @typedef {{ email: string, role: 'admin' | 'employee', mustChangePassword: boolean, firstName: string | null,
- *   displayName?: string | null, hasAvatar?: boolean, avatarUrl?: string | null, theme?: 'light' | 'dark' }} CurrentUser
+ *   displayName?: string | null, hasAvatar?: boolean, avatarUrl?: string | null, theme?: 'light' | 'dark', timezone?: string }} CurrentUser
  */
 
 /** @returns {Promise<{ user: CurrentUser, home: string } | null>} */

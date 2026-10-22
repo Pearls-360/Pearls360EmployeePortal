@@ -50,7 +50,7 @@ async function loadEmployee(db, id) {
   const { rows } = await db.query(
     `select ${EMPLOYEE_COLUMNS}
        from app.users u join app.employee_profiles p on p.user_id = u.id
-      where u.id = $1 and u.role = 'employee'`,
+      where u.id = $1 and u.role = 'employee' and u.deleted_at is null`,
     [id]
   );
   if (!rows[0]) throw new HttpError(404, 'Employee not found.', { code: 'NOT_FOUND' });
@@ -75,12 +75,12 @@ export async function overview({ db, req, res }) {
             count(*) filter (where status = 'inactive')::int as inactive,
             count(*) filter (where status = 'pending')::int as pending,
             count(*) filter (where created_at >= now() - interval '30 days')::int as recently_added
-       from app.users where role = 'employee'`
+       from app.users where role = 'employee' and deleted_at is null`
   );
   const { rows: recentEmployees } = await db.query(
     `select ${EMPLOYEE_COLUMNS}
        from app.users u join app.employee_profiles p on p.user_id = u.id
-      where u.role = 'employee'
+      where u.role = 'employee' and u.deleted_at is null
       order by u.created_at desc
       limit 5`
   );
@@ -95,7 +95,7 @@ export async function overview({ db, req, res }) {
   );
   const { rows: extras } = await db.query(
     `select (select count(*)::int from app.documents) as documents,
-            (select count(*)::int from app.invoices) as invoices`
+            (select count(*)::int from app.invoices where deleted_at is null) as invoices`
   );
   const c = counts[0];
   sendJson(res, 200, {
@@ -132,7 +132,7 @@ export async function listEmployees({ db, req, res, url }) {
   const { rows } = await db.query(
     `select ${EMPLOYEE_COLUMNS}
        from app.users u join app.employee_profiles p on p.user_id = u.id
-      where u.role = 'employee'
+      where u.role = 'employee' and u.deleted_at is null
         and ($1::text is null or u.status = $1)
         and ($2::text is null
              or p.first_name ilike $2 or p.last_name ilike $2 or (p.first_name || ' ' || p.last_name) ilike $2
@@ -220,7 +220,7 @@ export async function updateEmployee({ db, req, res, params }) {
 
   try {
     await db.tx(async (tx) => {
-      const { rows } = await tx.query("select id from app.users where id = $1 and role = 'employee' for update", [id]);
+      const { rows } = await tx.query("select id from app.users where id = $1 and role = 'employee' and deleted_at is null for update", [id]);
       if (!rows[0]) throw new HttpError(404, 'Employee not found.', { code: 'NOT_FOUND' });
 
       if (data.email !== undefined) {
@@ -255,7 +255,7 @@ export async function setEmployeeStatus({ db, req, res, params }) {
 
   await db.tx(async (tx) => {
     const { rows } = await tx.query(
-      "select id, status, password_hash is not null as has_password from app.users where id = $1 and role = 'employee' for update",
+      "select id, status, password_hash is not null as has_password from app.users where id = $1 and role = 'employee' and deleted_at is null for update",
       [id]
     );
     const user = rows[0];
@@ -275,19 +275,78 @@ export async function setEmployeeStatus({ db, req, res, params }) {
   sendJson(res, 200, { employee: await loadEmployee(db, id) });
 }
 
-/** Removes an employee account. Invoices stay, so an employee with invoices cannot be removed. @type {import('../router.js').Handler} */
+/** Moves an employee and their invoices to Soft Delete. Nothing is removed. @type {import('../router.js').Handler} */
 export async function deleteEmployee({ db, req, res, params }) {
   const session = await requireSession(db, req, { roles: ['admin'] });
   const id = assertUuid(params.id);
   await db.tx(async (tx) => {
-    const { rows } = await tx.query("select id from app.users where id = $1 and role = 'employee' for update", [id]);
+    const { rows } = await tx.query(
+      "select id from app.users where id = $1 and role = 'employee' and deleted_at is null for update",
+      [id]
+    );
     if (!rows[0]) throw new HttpError(404, 'Employee not found.', { code: 'NOT_FOUND' });
-    const { rows: invoices } = await tx.query('select count(*)::int as n from app.invoices where employee_id = $1', [id]);
-    if (invoices[0].n > 0) {
-      throw new HttpError(409, 'This employee has invoices, so the account cannot be deleted.', { code: 'CONFLICT' });
-    }
-    await audit(tx, { actorId: session.user.id, action: 'employee.deleted', targetType: 'user', targetId: id, ip: clientIp(req) });
-    await tx.query('delete from app.users where id = $1', [id]);
+    await tx.query('update app.users set deleted_at = now() where id = $1', [id]);
+    const hidden = await tx.query('update app.invoices set deleted_at = now() where employee_id = $1 and deleted_at is null', [id]);
+    await revokeUserSessions(tx, id, 'account_deleted');
+    await tx.query('update app.password_reset_tokens set revoked_at = now() where user_id = $1 and used_at is null and revoked_at is null', [id]);
+    await audit(tx, {
+      actorId: session.user.id,
+      action: 'employee.deleted',
+      targetType: 'user',
+      targetId: id,
+      metadata: { invoices: hidden.rowCount ?? 0 },
+      ip: clientIp(req)
+    });
+  });
+  sendJson(res, 200, { ok: true });
+}
+
+/** Accounts waiting in Soft Delete, with the invoices hidden alongside them. @type {import('../router.js').Handler} */
+export async function listDeleted({ db, req, res }) {
+  await requireSession(db, req, { roles: ['admin'] });
+  const { rows } = await db.query(
+    `select u.id, u.email, u.deleted_at, u.deleted_at + interval '30 days' as keep_until,
+            p.first_name, p.last_name, p.employee_code,
+            (select count(*)::int from app.invoices i where i.employee_id = u.id and i.deleted_at is not null) as invoice_count
+       from app.users u
+       join app.employee_profiles p on p.user_id = u.id
+      where u.role = 'employee' and u.deleted_at is not null
+      order by u.deleted_at desc
+      limit 200`
+  );
+  sendJson(res, 200, {
+    accounts: rows.map((row) => ({
+      id: row.id,
+      email: row.email,
+      name: `${row.first_name} ${row.last_name}`,
+      employeeCode: row.employee_code,
+      deletedAt: row.deleted_at,
+      keepUntil: row.keep_until,
+      invoiceCount: row.invoice_count
+    }))
+  });
+}
+
+/** Restores a soft-deleted employee and the invoices that were hidden with them. @type {import('../router.js').Handler} */
+export async function restoreEmployee({ db, req, res, params }) {
+  const session = await requireSession(db, req, { roles: ['admin'] });
+  const id = assertUuid(params.id, 'Account not found.');
+  await db.tx(async (tx) => {
+    const { rows } = await tx.query(
+      "select id from app.users where id = $1 and role = 'employee' and deleted_at is not null for update",
+      [id]
+    );
+    if (!rows[0]) throw new HttpError(404, 'That account is not in Soft Delete.', { code: 'NOT_FOUND' });
+    await tx.query('update app.users set deleted_at = null where id = $1', [id]);
+    const restored = await tx.query('update app.invoices set deleted_at = null where employee_id = $1 and deleted_at is not null', [id]);
+    await audit(tx, {
+      actorId: session.user.id,
+      action: 'employee.restored',
+      targetType: 'user',
+      targetId: id,
+      metadata: { invoices: restored.rowCount ?? 0 },
+      ip: clientIp(req)
+    });
   });
   sendJson(res, 200, { ok: true });
 }

@@ -8,6 +8,7 @@ import * as profile from './routes/profile.js';
 import * as documents from './routes/documents.js';
 import * as invoices from './routes/invoices.js';
 import * as access from './routes/access.js';
+import * as quizzes from './routes/quizzes.js';
 
 /**
  * @typedef {{
@@ -27,6 +28,7 @@ const ROUTES = [
   ['POST', '/auth/logout', auth.logout],
   ['GET', '/auth/session', auth.currentSession],
   ['PATCH', '/auth/theme', auth.updateTheme],
+  ['PATCH', '/auth/timezone', auth.updateTimezone],
   ['POST', '/auth/forgot-password', auth.forgotPassword],
   ['POST', '/auth/token-info', auth.accessTokenInfo],
   ['POST', '/auth/set-password', auth.setPasswordWithToken],
@@ -41,6 +43,8 @@ const ROUTES = [
   ['PATCH', '/admin/employees/:id', admin.updateEmployee],
   ['POST', '/admin/employees/:id/status', admin.setEmployeeStatus],
   ['DELETE', '/admin/employees/:id', admin.deleteEmployee],
+  ['GET', '/admin/deleted', admin.listDeleted],
+  ['POST', '/admin/deleted/:id/restore', admin.restoreEmployee],
   ['POST', '/admin/employees/:id/access-link', admin.issueEmployeeAccessLink],
   ['GET', '/admin/admins', admin.listAdmins],
   ['POST', '/admin/admins', admin.createAdminAccount],
@@ -56,10 +60,17 @@ const ROUTES = [
   ['POST', '/admin/invoices/:id/status', invoices.setInvoiceStatus],
   ['GET', '/admin/access', access.listAccess],
   ['POST', '/admin/access', access.setAccess],
+  ['GET', '/admin/quizzes', quizzes.listQuizzes],
+  ['POST', '/admin/quizzes', quizzes.createQuiz],
+  ['GET', '/admin/quiz-assignments/:id', quizzes.getAssignment],
+  ['POST', '/admin/quiz-assignments/:id/score', quizzes.scoreAssignment],
 
   ['GET', '/employee/profile', employee.getProfile],
   ['GET', '/employee/documents', documents.listOwnDocuments],
   ['GET', '/employee/invoices', invoices.listOwnInvoices],
+  ['GET', '/employee/quizzes', quizzes.listOwnQuizzes],
+  ['GET', '/employee/quizzes/:id', quizzes.getOwnQuiz],
+  ['POST', '/employee/quizzes/:id/submit', quizzes.submitQuiz],
   ['PATCH', '/employee/profile', employee.updateProfile]
 ];
 

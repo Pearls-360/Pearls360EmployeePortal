@@ -34,7 +34,7 @@ export async function validateSessionToken(db, token) {
   if (!token || !looksLikeToken(token)) return null;
   const { rows } = await db.query(
     `select s.id, s.expires_at, s.created_at, s.last_seen_at,
-            u.id as user_id, u.email, u.role, u.status, u.must_change_password
+            u.id as user_id, u.email, u.role, u.status, u.must_change_password, u.deleted_at
        from app.sessions s
        join app.users u on u.id = s.user_id
       where s.token_hash = $1
@@ -45,8 +45,8 @@ export async function validateSessionToken(db, token) {
   );
   const row = rows[0];
   if (!row) return null;
-  if (row.status !== 'active') {
-    await revokeSession(db, row.id, 'account_inactive');
+  if (row.deleted_at || row.status !== 'active') {
+    await revokeSession(db, row.id, row.deleted_at ? 'account_deleted' : 'account_inactive');
     return null;
   }
 

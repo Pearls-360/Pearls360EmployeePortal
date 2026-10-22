@@ -11,7 +11,7 @@ export async function listAccess({ db, req, res }) {
        from app.users u
        join app.employee_profiles p on p.user_id = u.id
        left join app.leadership_access a on a.user_id = u.id
-      where u.role = 'employee'
+      where u.role = 'employee' and u.deleted_at is null
       order by lower(p.last_name), lower(p.first_name)`
   );
   sendJson(res, 200, {
@@ -32,7 +32,7 @@ export async function setAccess({ db, req, res }) {
   if (typeof body.leadership !== 'boolean') {
     throw new HttpError(422, 'Choose whether this person can open leadership documents.', { code: 'VALIDATION' });
   }
-  const { rows } = await db.query("select id from app.users where id = $1 and role = 'employee'", [userId]);
+  const { rows } = await db.query("select id from app.users where id = $1 and role = 'employee' and deleted_at is null", [userId]);
   if (!rows[0]) throw new HttpError(404, 'Employee not found.', { code: 'NOT_FOUND' });
 
   if (body.leadership) {

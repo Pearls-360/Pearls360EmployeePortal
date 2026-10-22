@@ -78,6 +78,8 @@ a.stat-card:hover .stat-card__arrow { color: var(--black); transform: translateX
 .panel__title { font-family: var(--font-heading); font-size: var(--h4); letter-spacing: var(--heading-ls); line-height: 1.2; margin: 0; }
 .panel__title + p { margin: .35rem 0 0; color: var(--ink-muted); font-size: var(--text-sm); }
 .panel-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.5rem, 3vw, 2.5rem); align-items: start; }
+.panel-grid--equal { align-items: stretch; grid-auto-rows: 1fr; }
+.panel-grid--equal > .panel { display: flex; flex-direction: column; height: 100%; min-height: 22rem; }
 .panel-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; }
 .panel-grid--3 > .panel { display: flex; flex-direction: column; height: 100%; min-height: 100%; }
 .panel-grid--3 > .panel > :last-child { margin-top: auto; }
@@ -85,6 +87,7 @@ a.stat-card:hover .stat-card__arrow { color: var(--black); transform: translateX
 @media (max-width: 900px) {
   .panel-grid,
   .panel-grid--3 { grid-template-columns: 1fr; }
+  .panel-grid--equal > .panel { min-height: 0; }
 }
 
 /* Toolbar */
@@ -132,6 +135,29 @@ a.stat-card:hover .stat-card__arrow { color: var(--black); transform: translateX
   .details { grid-template-columns: minmax(7.2rem, 42%) minmax(0, 1fr); }
 }
 
+.invoice-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 300px); gap: clamp(1.5rem, 3vw, 2.5rem); align-items: start; }
+.earnings > p { margin: .35rem 0 0; color: var(--ink-muted); font-size: var(--text-sm); }
+.earnings__amount { margin: 1.1rem 0 0; font-family: var(--font-heading); font-size: 1.7rem; letter-spacing: var(--heading-ls); color: var(--black); }
+.earnings__empty { margin-top: 1.2rem; }
+@media (max-width: 900px) { .invoice-layout { grid-template-columns: 1fr; } }
+
+.quiz-question { display: grid; gap: .65rem; padding: .85rem 0; border-top: 1px solid var(--rule); }
+.quiz-question__head strong { font-family: var(--font-heading); font-size: 1.15rem; font-weight: 400; }
+.quiz-kind { display: flex; border-bottom: 1px solid var(--rule); }
+.quiz-kind button {
+  flex: 1; min-height: 2.4rem; padding: .45rem .5rem;
+  background: transparent; color: var(--ink-muted);
+  font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+}
+.quiz-kind button.is-selected { color: var(--black); box-shadow: inset 0 -2px 0 var(--black); }
+.quiz-question [data-options] { display: grid; gap: .4rem; }
+.quiz-question [data-option], .quiz-question [data-prompt] { width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--rule); padding: .35rem 0; color: inherit; font: inherit; }
+.quiz-group { padding: .4rem 0 1rem; }
+.quiz-group h3 { margin: .6rem 0 0; font-family: var(--font-heading); font-size: 1.25rem; font-weight: 400; }
+.quiz-answer { margin: .25rem 0 .9rem; color: var(--ink-soft); }
+.take-question { display: grid; gap: .4rem; padding: .8rem 0; border-top: 1px solid var(--rule); }
+.take-question label { display: flex; gap: .5rem; align-items: flex-start; }
+
 .record-list { display: grid; }
 .record-list li { display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .95rem 0; border-bottom: 1px solid var(--rule); }
 .record-list p { margin: .25rem 0 0; color: var(--ink-muted); font-size: .85rem; }
@@ -144,15 +170,17 @@ a.stat-card:hover .stat-card__arrow { color: var(--black); transform: translateX
 .activity__who { grid-column: 1; font-size: .8rem; color: var(--ink-muted); }
 .activity__when { grid-row: 1 / span 2; grid-column: 2; align-self: center; font-size: .78rem; color: var(--ink-muted); white-space: nowrap; }
 
-/* Dialog (side drawer) — compact enough that the fields and the action sit in one view */
-.drawer {
-  width: min(640px, 100vw); max-width: 100vw; height: 100dvh; max-height: 100dvh;
-  margin: 0 0 0 auto; padding: 0; border: 0; border-left: 1px solid var(--rule);
-  background: var(--light); color: var(--black);
+/* Dialog (side drawer). Closed dialogs stay out of the page; open ones are a full-height panel on the right. */
+.drawer { display: none; }
+.drawer[open] {
   display: flex; flex-direction: column;
+  position: fixed; inset: 0 0 0 auto;
+  width: min(640px, 100vw); max-width: 100vw; height: 100dvh; max-height: none;
+  margin: 0; padding: 0; border: 0; border-left: 1px solid var(--rule);
+  background: var(--light); color: var(--black);
+  animation: drawer-in .5s var(--ease-out);
 }
 .drawer::backdrop { background: rgba(10, 8, 12, .45); }
-.drawer[open] { animation: drawer-in .5s var(--ease-out); }
 @keyframes drawer-in { from { transform: translateX(40px); opacity: 0; } }
 .drawer__inner { display: flex; flex-direction: column; height: 100%; min-height: 0; flex: 1; }
 .drawer__head { flex: none; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem 1.35rem; background: var(--light); border-bottom: 1px solid var(--rule); }

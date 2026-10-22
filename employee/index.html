@@ -22,19 +22,10 @@
     <main class="app-content" id="main">
       <div class="form__alert" data-page-alert role="alert" hidden><span data-alert-text></span></div>
 
-      <section class="dash-intro">
-        <span class="eyebrow">Workspace</span>
-        <h1 data-welcome>Welcome</h1>
-        <p data-role-line></p>
-      </section>
-
-      <div class="panel-grid">
+      <div class="panel-grid panel-grid--3 panel-grid--equal">
         <section class="panel" aria-labelledby="resources-title">
           <div class="panel__head">
-            <div>
-              <h2 class="panel__title" id="resources-title">My Resources</h2>
-              <p>Documents and training assigned to you.</p>
-            </div>
+            <h2 class="panel__title" id="resources-title">My Resources</h2>
             <a class="link" href="/employee/resources">Browse</a>
           </div>
           <ul class="record-list" data-resource-list></ul>
@@ -43,47 +34,20 @@
 
         <section class="panel" aria-labelledby="invoices-title">
           <div class="panel__head">
-            <div>
-              <h2 class="panel__title" id="invoices-title">My Invoices</h2>
-              <p>Your payment status and history.</p>
-            </div>
-            <a class="link" href="/employee/invoices">History</a>
+            <h2 class="panel__title" id="invoices-title">My Invoices</h2>
+            <a class="link" href="/employee/invoices">Browse</a>
           </div>
           <ul class="record-list" data-invoice-list></ul>
           <p class="empty" data-invoice-empty>You have no invoices yet.</p>
         </section>
 
-        <section class="panel" aria-labelledby="profile-title">
+        <section class="panel" aria-labelledby="training-title">
           <div class="panel__head">
-            <div>
-              <h2 class="panel__title" id="profile-title">My Profile</h2>
-            </div>
-            <a class="link" href="/employee/profile">Details</a>
+            <h2 class="panel__title" id="training-title">Training</h2>
+            <a class="link" href="/employee/training">Browse</a>
           </div>
-          <dl class="details">
-            <dt>Employee ID</dt><dd data-field="employeeCode"></dd>
-            <dt>Department</dt><dd data-field="department"></dd>
-            <dt>Designation</dt><dd data-field="designation"></dd>
-            <dt>Joining date</dt><dd data-field="joiningDate"></dd>
-          </dl>
-        </section>
-
-        <section class="panel" aria-labelledby="quick-title">
-          <div class="panel__head"><h2 class="panel__title" id="quick-title">Quick Access</h2></div>
-          <div class="quick-actions">
-            <a class="quick-action" href="/employee/resources">
-              <span class="quick-action__label">Browse My Resources</span>
-              <span class="quick-action__hint">Documents and training available to you</span>
-            </a>
-            <a class="quick-action" href="/employee/invoices">
-              <span class="quick-action__label">View My Invoices</span>
-              <span class="quick-action__hint">Your own invoices only</span>
-            </a>
-            <a class="quick-action" href="/employee/profile">
-              <span class="quick-action__label">Update My Profile</span>
-              <span class="quick-action__hint">Name, phone and photo</span>
-            </a>
-          </div>
+          <ul class="record-list" data-training-list></ul>
+          <p class="empty" data-training-empty>No training has been shared yet.</p>
         </section>
       </div>
     </main>

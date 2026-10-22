@@ -294,3 +294,43 @@ describe('directory, details, edits and audit', () => {
     for (const { m } of rows) assert.ok(!/password|token|hash|argon/i.test(m), m);
   });
 });
+
+describe('soft delete', () => {
+  test('hides the employee and their invoices, then restores both', async () => {
+    const { employee, agent, input } = await createActiveEmployee(admin, { email: 'soft.delete@example.test', employeeCode: 'SOFT-1' });
+    const created = await admin.post('/admin/invoices', {
+      employeeId: employee.id,
+      invoiceNumber: 'SOFT-INV',
+      description: 'Kept with the account',
+      amount: '40',
+      currency: 'USD',
+      status: 'paid',
+      issuedOn: '2026-04-01'
+    });
+    assert.equal(created.status, 201);
+
+    const removed = await admin.request('DELETE', `/admin/employees/${employee.id}`);
+    assert.equal(removed.status, 200);
+
+    const directory = await admin.get('/admin/employees');
+    assert.equal(directory.body.employees.some((row) => row.id === employee.id), false);
+    const invoices = await admin.get('/admin/invoices');
+    assert.equal(invoices.body.invoices.some((row) => row.invoiceNumber === 'SOFT-INV'), false);
+    assert.equal((await agent.get('/auth/session')).status, 401);
+
+    const bin = await admin.get('/admin/deleted');
+    const row = bin.body.accounts.find((account) => account.id === employee.id);
+    assert.ok(row);
+    assert.equal(row.invoiceCount, 1);
+    const kept = new Date(row.keepUntil).getTime() - new Date(row.deletedAt).getTime();
+    assert.ok(kept >= 29 * 24 * 60 * 60 * 1000);
+
+    const restored = await admin.post(`/admin/deleted/${employee.id}/restore`);
+    assert.equal(restored.status, 200);
+    const back = await admin.get(`/admin/employees/${employee.id}`);
+    assert.equal(back.status, 200);
+    assert.equal(back.body.employee.email, input.email);
+    const invoicesAgain = await admin.get('/admin/invoices');
+    assert.ok(invoicesAgain.body.invoices.some((item) => item.invoiceNumber === 'SOFT-INV'));
+  });
+});

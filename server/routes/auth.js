@@ -1,3 +1,4 @@
+import { timezoneById } from '../../src/lib/timezones.js';
 import { config, emailConfigured } from '../config.js';
 import { HttpError, clientIp, readJson, redirect, sendJson, userAgent } from '../http.js';
 import { hashPassword, needsRehash, passwordProblem, verifyPassword } from '../auth/passwords.js';
@@ -36,7 +37,7 @@ export async function login({ db, req, res }) {
   await rateLimit(db, `login:email:${email}`, { limit: 8, windowSeconds: 15 * 60 });
 
   const { rows } = await db.query(
-    'select id, email, role, status, password_hash, must_change_password from app.users where email = $1',
+    'select id, email, role, status, password_hash, must_change_password, deleted_at from app.users where email = $1',
     [email]
   );
   const user = rows[0];
@@ -46,7 +47,7 @@ export async function login({ db, req, res }) {
     await audit(db, { action: 'auth.login_failed', targetType: user ? 'user' : undefined, targetId: user?.id, ip });
     throw new HttpError(401, INVALID_LOGIN, { code: 'INVALID_CREDENTIALS' });
   }
-  if (user.status !== 'active') {
+  if (user.deleted_at || user.status !== 'active') {
     await audit(db, { actorId: user.id, action: 'auth.login_blocked', targetType: 'user', targetId: user.id, metadata: { status: user.status }, ip });
     throw new HttpError(403, 'This account is not active. Please contact your administrator.', { code: 'ACCOUNT_INACTIVE' });
   }
@@ -84,7 +85,7 @@ export async function currentSession({ db, req, res }) {
   const session = await requireSession(db, req);
   const { user } = session;
   const { rows } = await db.query(
-    `select theme, display_name, avatar_mime is not null as has_avatar, avatar_updated_at,
+    `select theme, timezone, display_name, avatar_mime is not null as has_avatar, avatar_updated_at,
             (select first_name from app.employee_profiles where user_id = $1) as first_name
        from app.users where id = $1`,
     [user.id]
@@ -101,7 +102,8 @@ export async function currentSession({ db, req, res }) {
       displayName,
       hasAvatar: Boolean(meta.has_avatar),
       avatarUrl: meta.has_avatar ? `/api/auth/avatar?v=${new Date(meta.avatar_updated_at).getTime()}` : null,
-      theme: meta.theme === 'dark' ? 'dark' : 'light'
+      theme: meta.theme === 'dark' ? 'dark' : 'light',
+      timezone: timezoneById(meta.timezone).id
     },
     home: homeFor(user)
   });
@@ -123,6 +125,18 @@ export async function updateTheme({ db, req, res }) {
   }
   await db.query('update app.users set theme = $2 where id = $1', [session.user.id, theme]);
   sendJson(res, 200, { theme });
+}
+
+/** Saves the region used by the top-bar clock. @type {import('../router.js').Handler} */
+export async function updateTimezone({ db, req, res }) {
+  const session = await requireSession(db, req);
+  const body = await readJson(req);
+  const timezone = typeof body.timezone === 'string' ? body.timezone : '';
+  if (timezoneById(timezone).id !== timezone) {
+    throw new HttpError(422, 'Choose a region from the list.', { code: 'VALIDATION', fields: { timezone: 'Choose a region from the list.' } });
+  }
+  await db.query('update app.users set timezone = $2 where id = $1', [session.user.id, timezone]);
+  sendJson(res, 200, { timezone });
 }
 
 const FORGOT_RESPONSE = {

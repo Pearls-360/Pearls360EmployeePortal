@@ -15,7 +15,7 @@ async function loadOwnProfile(db, userId) {
             p.employee_code, p.first_name, p.last_name, p.phone, p.department, p.designation,
             to_char(p.joining_date, 'YYYY-MM-DD') as joining_date, p.employment_status
        from app.users u join app.employee_profiles p on p.user_id = u.id
-      where u.id = $1 and u.role = 'employee'`,
+      where u.id = $1 and u.role = 'employee' and u.deleted_at is null`,
     [userId]
   );
   if (!rows[0]) {

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Training | Pearls360 Employee Portal</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f1f1ef">
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <script src="/boot.js"></script>
+  <script type="module" src="/src/pages/employee-records.js"></script>
+</head>
+<body data-auth="pending" data-records="training">
+<div class="app" data-shell>
+  <aside class="sidebar" data-sidebar></aside>
+  <div class="sidebar-backdrop" data-sidebar-backdrop hidden></div>
+  <div class="app-body">
+    <header class="topbar" data-topbar></header>
+    <main class="app-content" id="main">
+      <section class="dash-intro">
+        <h1>Training</h1>
+      </section>
+      <div class="form__alert" data-page-alert role="alert" hidden><span data-alert-text></span></div>
+      <div class="panel-grid panel-grid--equal">
+      <section class="panel" aria-labelledby="training-list-title">
+        <div class="panel__head">
+          <h2 class="panel__title" id="training-list-title">Training</h2>
+        </div>
+        <ul class="record-list" data-rows></ul>
+        <p class="empty" data-empty hidden>No training has been shared yet.</p>
+      </section>
+      <section class="panel" aria-labelledby="quizzes-title">
+        <div class="panel__head">
+          <h2 class="panel__title" id="quizzes-title">Quizzes</h2>
+        </div>
+        <ul class="record-list" data-quizzes></ul>
+        <p class="empty" data-quizzes-empty>No quizzes have been assigned yet.</p>
+      </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<dialog class="drawer" id="take-dialog" aria-labelledby="take-dialog-title">
+  <div class="drawer__inner">
+    <div class="drawer__head">
+      <div>
+        <span class="eyebrow eyebrow--plain">Training</span>
+        <h2 class="drawer__title" id="take-dialog-title">Quiz</h2>
+      </div>
+      <button class="drawer__close" type="button" data-take-close aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="drawer__body">
+      <form class="form" id="take-form" novalidate>
+        <div class="form__alert" data-take-alert role="alert" hidden><span data-alert-text></span></div>
+        <div data-take-questions></div>
+        <button class="btn" type="submit" data-submit-quiz>Submit quiz</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+</body>
+</html>

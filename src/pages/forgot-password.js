@@ -24,7 +24,7 @@ form.addEventListener('submit', async (event) => {
   setBusy(submit, true, 'Sending…');
   try {
     const result = await api('/auth/forgot-password', { method: 'POST', body: { email: value }, redirectOnAuthError: false });
-    showAlert(alertBox, result.message, 'success');
+    showAlert(alertBox, result.message, 'success', { persist: true });
     email.readOnly = true;
     submit.hidden = true;
   } catch (error) {

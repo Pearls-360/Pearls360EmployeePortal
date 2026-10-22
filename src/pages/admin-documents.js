@@ -3,17 +3,18 @@ import '../styles/portal.css';
 import '../styles/dashboard.css';
 import '../styles/shell.css';
 import { api } from '../lib/api.js';
-import { applyFieldErrors, clearErrorsOnInput, clearFieldErrors, hideAlert, setBusy, showAlert } from '../lib/forms.js';
+import { applyFieldErrors, clearErrorsOnInput, clearFieldErrors, confirmAction, hideAlert, setBusy, showAlert } from '../lib/forms.js';
 import { formatDateTime } from '../lib/format.js';
 import { mountShell } from '../lib/shell.js';
 import { requirePage, revealPage } from '../lib/session.js';
+import { mountQuizzes } from './admin-quizzes.js';
 
 /** @template {Element} T @param {string} sel @returns {T} */
 const $ = (sel) => /** @type {T} */ (document.querySelector(sel));
 
 const kind = document.body.dataset.kind === 'resource' ? 'resource' : 'library';
 const nav = kind === 'resource' ? 'resources' : 'library';
-const title = kind === 'resource' ? 'Team Resources' : 'Internal Library';
+const title = kind === 'resource' ? 'Training Resources' : 'Internal Library';
 
 /** @param {File} file */
 function readFile(file) {
@@ -40,7 +41,7 @@ const form = /** @type {HTMLFormElement} */ ($('#upload-form'));
 const alertEl = /** @type {HTMLElement} */ ($('[data-page-alert]'));
 const formAlert = /** @type {HTMLElement} */ ($('[data-form-alert]'));
 const save = /** @type {HTMLButtonElement} */ ($('[data-save]'));
-const noun = kind === 'resource' ? 'resource' : 'document';
+const noun = kind === 'resource' ? 'file' : 'document';
 
 function openUpload() {
   hideAlert(formAlert);
@@ -65,13 +66,22 @@ async function load() {
     const open = document.createElement('a');
     open.className = 'link';
     open.href = `/api/documents/${doc.id}/file`;
-    open.textContent = 'Download';
+    open.target = '_blank';
+    open.rel = 'noopener noreferrer';
+    open.textContent = 'View';
     const remove = document.createElement('button');
     remove.className = 'link';
     remove.type = 'button';
     remove.textContent = 'Remove';
     remove.addEventListener('click', async () => {
-      if (!window.confirm(`Remove “${doc.title}” from the database?`)) return;
+      const confirmed = await confirmAction({
+        title: 'Remove this file?',
+        message: `“${doc.title}” will be removed. People will no longer be able to open it.`,
+        confirmLabel: 'Remove',
+        cancelLabel: 'Keep it',
+        danger: true
+      });
+      if (!confirmed) return;
       await api(`/admin/documents/${doc.id}`, { method: 'DELETE' });
       await load();
     });
@@ -112,7 +122,7 @@ form.addEventListener('submit', async (event) => {
     });
     setBusy(save, false);
     dialog.close();
-    showAlert(alertEl, 'Saved in the database.', 'success');
+    showAlert(alertEl, kind === 'resource' ? 'Training uploaded.' : 'Document uploaded.', 'success');
     await load();
   } catch (error) {
     setBusy(save, false);
@@ -140,6 +150,7 @@ async function init() {
   } catch (error) {
     showAlert(alertEl, /** @type {Error} */ (error).message);
   }
+  if (kind === 'resource') mountQuizzes();
   if (new URLSearchParams(window.location.search).get('add') === '1') {
     openUpload();
     window.history.replaceState({}, '', kind === 'resource' ? '/admin/resources' : '/admin/library');

@@ -24,7 +24,9 @@ export const icons = {
   camera: () => svg('<path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'),
   library: () => svg('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'),
   folder: () => svg('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'),
+  training: () => svg('<path d="M2 8l10-4 10 4-10 4z"/><path d="M6 10.5V16c0 1.8 2.4 3 6 3s6-1.2 6-3v-5.5"/>'),
   invoice: () => svg('<path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>'),
   shield: () => svg('<path d="M12 3l8 3v6c0 5-3.4 7.8-8 9-4.6-1.2-8-4-8-9V6z"/>'),
-  activity: () => svg('<path d="M4 19V5M4 19h16"/><path d="M8 15l3-4 3 2 4-6"/>')
+  activity: () => svg('<path d="M4 19V5M4 19h16"/><path d="M8 15l3-4 3 2 4-6"/>'),
+  archive: () => svg('<path d="M3 6h18v3H3z"/><path d="M5 9v10h14V9"/><path d="M10 13h4"/>')
 };

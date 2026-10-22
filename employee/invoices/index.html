@@ -25,10 +25,16 @@
         <p>Only invoices that belong to you.</p>
       </section>
       <div class="form__alert" data-page-alert role="alert" hidden><span data-alert-text></span></div>
-      <section class="panel">
-        <ul class="record-list" data-rows></ul>
-        <p class="empty" data-empty hidden>You have no invoices yet.</p>
-      </section>
+      <div class="invoice-layout">
+        <section class="panel">
+          <ul class="record-list" data-rows></ul>
+          <p class="empty" data-empty hidden>You have no invoices yet.</p>
+        </section>
+        <aside class="panel earnings" aria-labelledby="earned-title">
+          <h2 class="panel__title" id="earned-title">Total earned</h2>
+          <div data-earnings></div>
+        </aside>
+      </div>
     </main>
   </div>
 </div>

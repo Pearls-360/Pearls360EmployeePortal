@@ -39,7 +39,13 @@ const ADMIN_ENDPOINTS = (id) => [
   ['GET', '/admin/invoices'],
   ['POST', '/admin/invoices', {}],
   ['GET', '/admin/access'],
-  ['POST', '/admin/access', {}]
+  ['POST', '/admin/access', {}],
+  ['GET', '/admin/deleted'],
+  ['POST', `/admin/deleted/${id}/restore`, {}],
+  ['GET', '/admin/quizzes'],
+  ['POST', '/admin/quizzes', {}],
+  ['GET', `/admin/quiz-assignments/${id}`],
+  ['POST', `/admin/quiz-assignments/${id}/score`, { score: 1 }]
 ];
 
 describe('unauthenticated access', () => {
@@ -51,8 +57,12 @@ describe('unauthenticated access', () => {
       ['PATCH', '/employee/profile', { phone: '' }],
       ['GET', '/employee/documents'],
       ['GET', '/employee/invoices'],
+      ['GET', '/employee/quizzes'],
+      ['GET', `/employee/quizzes/${alice.employee.id}`],
+      ['POST', `/employee/quizzes/${alice.employee.id}/submit`, {}],
       ['GET', '/documents/00000000-0000-4000-8000-000000000001/file'],
-      ['GET', '/auth/session']
+      ['GET', '/auth/session'],
+      ['PATCH', '/auth/timezone', { timezone: 'UTC' }]
     ];
     for (const [method, path, body] of endpoints) {
       const r = await call({ method, path, body });

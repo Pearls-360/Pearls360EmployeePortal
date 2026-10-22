@@ -39,6 +39,7 @@ export async function listInvoices({ db, req, res }) {
        from app.invoices i
        join app.users u on u.id = i.employee_id
        left join app.employee_profiles p on p.user_id = u.id
+      where i.deleted_at is null and u.deleted_at is null
       order by i.issued_on desc, i.created_at desc
       limit 300`
   );
@@ -70,7 +71,7 @@ export async function createInvoice({ db, req, res }) {
   if (dueOn && issuedOn && dueOn < issuedOn) errors.dueOn = 'Due date cannot be before the issue date.';
   if (Object.keys(errors).length) throw new HttpError(422, 'Please correct the highlighted fields.', { code: 'VALIDATION', fields: errors });
 
-  const { rows: employees } = await db.query("select id from app.users where id = $1 and role = 'employee'", [employeeId]);
+  const { rows: employees } = await db.query("select id from app.users where id = $1 and role = 'employee' and deleted_at is null", [employeeId]);
   if (!employees[0]) throw new HttpError(422, 'Choose an employee.', { code: 'VALIDATION', fields: { employeeId: 'Choose an employee account.' } });
 
   try {
@@ -115,7 +116,7 @@ export async function setInvoiceStatus({ db, req, res, params }) {
   if (!STATUSES.has(String(body.status || ''))) {
     throw new HttpError(422, 'Choose a status.', { code: 'VALIDATION', fields: { status: 'Choose a status.' } });
   }
-  const { rowCount } = await db.query('update app.invoices set status = $2 where id = $1', [id, body.status]);
+  const { rowCount } = await db.query('update app.invoices set status = $2 where id = $1 and deleted_at is null', [id, body.status]);
   if (!rowCount) throw new HttpError(404, 'Invoice not found.', { code: 'NOT_FOUND' });
   await audit(db, { actorId: session.user.id, action: 'invoice.updated', targetType: 'invoice', targetId: id, metadata: { status: body.status }, ip: clientIp(req) });
   sendJson(res, 200, { ok: true });
@@ -129,7 +130,7 @@ export async function listOwnInvoices({ db, req, res }) {
        from app.invoices i
        join app.users u on u.id = i.employee_id
        left join app.employee_profiles p on p.user_id = u.id
-      where i.employee_id = $1 and i.status <> 'draft'
+      where i.employee_id = $1 and i.status <> 'draft' and i.deleted_at is null
       order by i.issued_on desc`,
     [session.user.id]
   );

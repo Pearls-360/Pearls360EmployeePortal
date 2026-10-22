@@ -47,7 +47,7 @@ form.addEventListener('submit', async (event) => {
     await api('/auth/set-password', { method: 'POST', body: { token, password: password.value }, redirectOnAuthError: false });
     setBusy(submit, false);
     form.hidden = true;
-    showAlert(alertBox, 'Your password has been saved. You can now sign in.', 'success');
+    showAlert(alertBox, 'Your password has been saved. You can now sign in.', 'success', { persist: true });
     toLogin.hidden = false;
     toLogin.focus();
   } catch (error) {

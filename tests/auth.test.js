@@ -215,6 +215,30 @@ describe('appearance', () => {
     assert.equal((await employee.agent.get('/auth/session')).body.user.theme, 'light');
     await admin.patch('/auth/theme', { theme: 'light' });
   });
+
+  test('the clock region is stored on the account and returns after a new sign-in', async () => {
+    const session = await admin.get('/auth/session');
+    assert.equal(session.body.user.timezone, 'America/New_York');
+
+    const saved = await admin.patch('/auth/timezone', { timezone: 'America/Los_Angeles' });
+    assert.equal(saved.status, 200);
+    assert.equal(saved.body.timezone, 'America/Los_Angeles');
+    const stored = await db.query('select timezone from app.users where email = $1', [ADMIN_EMAIL]);
+    assert.equal(stored.rows[0].timezone, 'America/Los_Angeles');
+
+    const invalid = await admin.patch('/auth/timezone', { timezone: 'Not/AZone' });
+    assert.equal(invalid.status, 422);
+    assert.equal((await db.query('select timezone from app.users where email = $1', [ADMIN_EMAIL])).rows[0].timezone, 'America/Los_Angeles');
+
+    assert.equal((await admin.post('/auth/logout')).status, 200);
+    assert.equal((await admin.get('/auth/session')).status, 401);
+    assert.equal((await admin.login(ADMIN_EMAIL, ADMIN_PASSWORD)).status, 200);
+    assert.equal((await admin.get('/auth/session')).body.user.timezone, 'America/Los_Angeles');
+
+    const employee = await createActiveEmployee(admin);
+    assert.equal((await employee.agent.get('/auth/session')).body.user.timezone, 'America/New_York');
+    await admin.patch('/auth/timezone', { timezone: 'America/New_York' });
+  });
 });
 
 describe('forgot password', () => {

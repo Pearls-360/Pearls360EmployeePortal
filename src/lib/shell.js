@@ -1,10 +1,11 @@
+import { startClock } from './clock.js';
 import { icons } from './icons.js';
 import { bindSignOut } from './session.js';
 
 const COLLAPSE_KEY = 'p360-sidebar-collapsed';
 
 /**
- * @typedef {'dashboard' | 'admins' | 'employees' | 'library' | 'resources' | 'invoices' | 'access' | 'activity' | 'settings' | 'profile' | 'my-resources' | 'my-invoices'} NavId
+ * @typedef {'dashboard' | 'admins' | 'employees' | 'library' | 'resources' | 'invoices' | 'access' | 'activity' | 'settings' | 'deleted' | 'profile' | 'my-resources' | 'training' | 'my-invoices'} NavId
  * @typedef {{ id: NavId, label: string, href: string, icon: keyof typeof icons }} NavItem
  * @typedef {{ label: string, items: NavItem[] }} NavGroup
  */
@@ -23,7 +24,7 @@ function navFor(role) {
             { id: 'admins', label: 'Admins', href: '/admin/admins', icon: 'admin' },
             { id: 'employees', label: 'Employees', href: '/admin/employees', icon: 'users' },
             { id: 'library', label: 'Internal Library', href: '/admin/library', icon: 'library' },
-            { id: 'resources', label: 'Team Resources', href: '/admin/resources', icon: 'folder' },
+            { id: 'resources', label: 'Training Resources', href: '/admin/resources', icon: 'training' },
             { id: 'invoices', label: 'Employee Invoices', href: '/admin/invoices', icon: 'invoice' }
           ]
         },
@@ -32,6 +33,7 @@ function navFor(role) {
           items: [
             { id: 'access', label: 'Access Control', href: '/admin/access', icon: 'shield' },
             { id: 'activity', label: 'Activity Logs', href: '/admin/activity', icon: 'activity' },
+            { id: 'deleted', label: 'Soft Delete', href: '/admin/deleted', icon: 'archive' },
             { id: 'settings', label: 'Settings', href: '/admin/settings', icon: 'settings' }
           ]
         }
@@ -47,6 +49,7 @@ function navFor(role) {
         items: [
           { id: 'dashboard', label: 'Dashboard', href: '/employee', icon: 'dashboard' },
           { id: 'my-resources', label: 'My Resources', href: '/employee/resources', icon: 'folder' },
+          { id: 'training', label: 'Training', href: '/employee/training', icon: 'training' },
           { id: 'my-invoices', label: 'My Invoices', href: '/employee/invoices', icon: 'invoice' }
         ]
       },
@@ -76,7 +79,7 @@ function navList(items, active) {
 
 /**
  * @param {{ role: 'admin' | 'employee', active: NavId, title: string,
- *   user: { email: string, firstName?: string | null, displayName?: string | null, hasAvatar?: boolean, avatarUrl?: string | null } }} opts
+ *   user: { email: string, firstName?: string | null, displayName?: string | null, hasAvatar?: boolean, avatarUrl?: string | null, timezone?: string | null } }} opts
  */
 export function mountShell({ role, active, title, user }) {
   const shell = document.querySelector('[data-shell]');
@@ -111,6 +114,13 @@ export function mountShell({ role, active, title, user }) {
     <div class="topbar__start">
       <button class="topbar__menu" type="button" data-open-nav aria-label="Open navigation">${icons.menu()}</button>
     </div>
+    <time class="clock" data-clock>
+      <span class="clock__digits">
+        <span data-clock-hour>--</span><span class="clock__colon" aria-hidden="true">:</span><span data-clock-minute>--</span><span class="clock__colon" aria-hidden="true">:</span><span data-clock-second>--</span>
+      </span>
+      <span class="clock__period" data-clock-period></span>
+      <span class="clock__place" data-clock-place></span>
+    </time>
     <div class="topbar__end">
       <div class="profile-menu" data-profile-menu>
         <button class="profile-menu__trigger" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="${displayName}" data-profile-toggle>
@@ -174,6 +184,7 @@ export function mountShell({ role, active, title, user }) {
   });
 
   bindSignOut();
+  startClock(user.timezone);
 
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
